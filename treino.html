@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Escalas</title>
+    <link rel="stylesheet" href="treino.css">
+</head>
+<body>
+    <header>
+        <h1>Sistema de Escalas MONITORA PIRACICABA</h1>
+    </header>
+
+    <main>
+        <section id="loginPanel" class="panel">
+            <h2>Login</h2>
+            <div class="card login-card">
+                <label for="usernameInput">Usuário</label>
+                <input id="usernameInput" type="text" placeholder="Digite seu usuário">
+
+                <label for="passwordInput">Senha</label>
+                <input id="passwordInput" type="password" placeholder="Digite sua senha">
+
+                <button id="loginBtn" class="primary">Entrar</button>
+            </div>
+        </section>
+
+        <section id="appPanel" class="hidden">
+            <section class="panel user-header">
+                <div>
+                    <p>Usuário: <strong id="loggedName">-</strong></p>
+                    <p>Perfil: <strong id="loggedRole">-</strong></p>
+                </div>
+                <button id="logoutBtn" class="secondary">Sair</button>
+            </section>
+
+            <section id="adminPanel" class="panel hidden">
+                <h2>Gerenciamento de Turnos e Escalas</h2>
+
+                <div class="card">
+                    <h3>Período da Escala (Mês)</h3>
+                    <div class="period-nav">
+                        <button id="prevPeriodBtn" class="secondary">← Mês Anterior</button>
+                        <div>
+                            <label for="periodStartDate">Visualizar o mês a partir de:</label>
+                            <input id="periodStartDate" type="date">
+                        </div>
+                        <button id="nextPeriodBtn" class="secondary">Próximo Mês →</button>
+                    </div>
+                    <p id="periodDisplay" class="period-info">Carregando...</p>
+                </div>
+
+                <div class="card">
+                    <h3>Adicionar Novo Funcionário</h3>
+                    <label for="newEmpName">Nome:</label>
+                    <input id="newEmpName" type="text" placeholder="Nome completo do funcionário">
+                    
+                    <label for="newEmpUsername">Usuário:</label>
+                    <input id="newEmpUsername" type="text" placeholder="Nome de usuário (ex: joao.silva)">
+                    
+                    <label for="newEmpPassword">Senha:</label>
+                    <input id="newEmpPassword" type="password" placeholder="Digite uma senha segura">
+                    
+                    <label for="newEmpTurno">Turno:</label>
+                    <select id="newEmpTurno">
+                        <option value="">Selecione um turno</option>
+                        <option value="Madrugada">Madrugada</option>
+                        <option value="Manhã">Manhã</option>
+                        <option value="Tarde">Tarde</option>
+                        <option value="Noite">Noite</option>
+                    </select>
+                    
+                    <button id="addEmpBtn" class="primary">Adicionar Funcionário</button>
+                    
+                    <div id="newEmpResult" class="hidden" style="margin-top: 10px; padding: 10px; background: #f0f9ff; border: 1px solid #0ea5e9; border-radius: 6px;">
+                        <strong>Funcionário criado com sucesso!</strong><br>
+                        <span id="newEmpCredentials"></span>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3>Funcionários Cadastrados</h3>
+                    <button id="employeesToggleBtn" class="secondary">Mostrar funcionários cadastrados</button>
+                    <div id="employeesListContainer" class="hidden">
+                        <div id="employeesList"></div>
+                        
+                        <div class="notifications-section">
+                            <h4>Notificações</h4>
+                            <div class="notification-form">
+                                <select id="notificationType">
+                                    <option value="general">Notificação Geral</option>
+                                    <option value="specific">Para Funcionário Específico</option>
+                                </select>
+                                <select id="notificationEmployee" class="hidden">
+                                    <option value="">Selecione um funcionário</option>
+                                </select>
+                                <textarea id="notificationMessage" placeholder="Digite a mensagem..." rows="3"></textarea>
+                                <button id="sendNotificationBtn" class="primary">Enviar Notificação</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3>Relatórios</h3>
+                    <div class="reports-section">
+                        <button id="generateReportBtn" class="primary">Gerar Relatório Mensal</button>
+                        <div id="reportsContainer" class="hidden"></div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3>Turnos</h3>
+                    <div class="shifts-overview" id="shiftsOverview">
+                        <div class="shift-overview-card">
+                            <div>
+                                <h4>🌙 Madrugada</h4>
+                                <p>Ver escala mensal completa.</p>
+                            </div>
+                            <div class="shift-actions">
+                                <button class="secondary" onclick="openShiftDetail('Madrugada')">Ver Escala</button>
+                                <button class="secondary" onclick="generateMonthlyReport('Madrugada')">Relatório</button>
+                            </div>
+                        </div>
+
+                        <div class="shift-overview-card">
+                            <div>
+                                <h4>☀️ Manhã</h4>
+                                <p>Ver escala mensal completa.</p>
+                            </div>
+                            <div class="shift-actions">
+                                <button class="secondary" onclick="openShiftDetail('Manhã')">Ver Escala</button>
+                                <button class="secondary" onclick="generateMonthlyReport('Manhã')">Relatório</button>
+                            </div>
+                        </div>
+
+                        <div class="shift-overview-card">
+                            <div>
+                                <h4>🌤️ Tarde</h4>
+                                <p>Ver escala mensal completa.</p>
+                            </div>
+                            <div class="shift-actions">
+                                <button class="secondary" onclick="openShiftDetail('Tarde')">Ver Escala</button>
+                                <button class="secondary" onclick="generateMonthlyReport('Tarde')">Relatório</button>
+                            </div>
+                        </div>
+
+                        <div class="shift-overview-card">
+                            <div>
+                                <h4>🌃 Noite</h4>
+                                <p>Ver escala mensal completa.</p>
+                            </div>
+                            <div class="shift-actions">
+                                <button class="secondary" onclick="openShiftDetail('Noite')">Ver Escala</button>
+                                <button class="secondary" onclick="generateMonthlyReport('Noite')">Relatório</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card hidden" id="shiftDetailPanel">
+                    <div class="detail-header">
+                        <button id="closeShiftDetailBtn" class="secondary">← Voltar</button>
+                        <h3 id="shiftDetailTitle">Escala do Turno</h3>
+                    </div>
+                    <div class="schedule-calendar" id="shiftDetailCalendar"></div>
+                    <div class="detail-actions">
+                        <button id="saveFolgasBtn" class="primary">Salvar Folgas</button>
+                    </div>
+                </div>
+            </section>
+
+            <section id="employeePanel" class="panel hidden">
+                <h2>Meu Calendário de Escala</h2>
+                <div class="card">
+                    <p><strong>Funcionário:</strong> <span id="employeeName">-</span></p>
+                    <p><strong>Turno:</strong> <span id="employeeShift">-</span></p>
+                </div>
+
+                <div class="card">
+                    <h3>Período da Escala</h3>
+                    <div class="period-nav">
+                        <button id="empPrevPeriodBtn" class="secondary">← Anterior</button>
+                        <div>
+                            <label for="empPeriodStartDate">Visualizar a partir de:</label>
+                            <input id="empPeriodStartDate" type="date">
+                        </div>
+                        <button id="empNextPeriodBtn" class="secondary">Próximo →</button>
+                    </div>
+                    <p id="empPeriodDisplay" class="period-info">Carregando...</p>
+                </div>
+                
+                <div class="card">
+                    <h3>Escala do mês selecionado</h3>
+                    <div class="employee-calendar" id="employeeCalendar"></div>
+                </div>
+
+                <div class="card">
+                    <h3>Minhas Notificações</h3>
+                    <div id="employeeNotificationsList"></div>
+                </div>
+            </section>
+        </section>
+    </main>
+
+    <script src="treino.js"></script>
+</body>
+</html>

@@ -1,0 +1,303 @@
+{
+  "turnos": [
+    "Madrugada",
+    "Manhã",
+    "Tarde",
+    "Noite"
+  ],
+  "settings": {
+    "cycleStart": "2026-04-01"
+  },
+  "employees": [
+    {
+      "id": 1,
+      "name": "Carlos",
+      "turno": "Madrugada"
+    },
+    {
+      "id": 2,
+      "name": "Ana",
+      "turno": "Manhã"
+    },
+    {
+      "id": 3,
+      "name": "Luiz",
+      "turno": "Tarde"
+    },
+    {
+      "id": 4,
+      "name": "Mariana",
+      "turno": "Noite"
+    },
+    {
+      "id": 5,
+      "name": "Pedro",
+      "turno": "Manhã"
+    },
+    {
+      "id": 6,
+      "name": "Fernanda",
+      "turno": "Tarde"
+    },
+    {
+      "id": 7,
+      "name": "pedro",
+      "turno": "Noite"
+    },
+    {
+      "id": 8,
+      "name": "ana martins",
+      "turno": "Noite"
+    },
+    {
+      "id": 9,
+      "name": "arthur",
+      "turno": "Noite"
+    },
+    {
+      "id": 10,
+      "name": "marcio",
+      "turno": "Noite"
+    },
+    {
+      "id": 11,
+      "name": "adrielle",
+      "turno": "Noite"
+    },
+    {
+      "id": 12,
+      "name": "mariaeduarda",
+      "turno": "Noite"
+    },
+    {
+      "id": 13,
+      "name": "João Silva",
+      "turno": "Manhã"
+    },
+    {
+      "id": 14,
+      "name": "Pedro de Almeida Leite Silva",
+      "turno": "Noite"
+    }
+  ],
+  "folgas": [
+    {
+      "employeeId": 2,
+      "date": "2026-04-07"
+    },
+    {
+      "employeeId": 4,
+      "date": "2026-04-09"
+    },
+    {
+      "employeeId": 1,
+      "date": "2026-04-05"
+    },
+    {
+      "employeeId": 1,
+      "date": "2026-04-07"
+    },
+    {
+      "employeeId": 4,
+      "date": "2026-03-02"
+    },
+    {
+      "employeeId": 7,
+      "date": "2026-03-08"
+    },
+    {
+      "employeeId": 7,
+      "date": "2026-03-14"
+    },
+    {
+      "employeeId": 7,
+      "date": "2026-03-19"
+    },
+    {
+      "employeeId": 8,
+      "date": "2026-03-04"
+    },
+    {
+      "employeeId": 8,
+      "date": "2026-03-10"
+    },
+    {
+      "employeeId": 8,
+      "date": "2026-03-16"
+    },
+    {
+      "employeeId": 8,
+      "date": "2026-03-22"
+    },
+    {
+      "employeeId": 8,
+      "date": "2026-03-27"
+    },
+    {
+      "employeeId": 12,
+      "date": "2026-03-18"
+    },
+    {
+      "employeeId": 1,
+      "date": "2026-03-03"
+    },
+    {
+      "employeeId": 1,
+      "date": "2026-03-08"
+    },
+    {
+      "employeeId": 1,
+      "date": "2026-03-13"
+    },
+    {
+      "employeeId": 1,
+      "date": "2026-03-18"
+    },
+    {
+      "employeeId": 14,
+      "date": "2026-03-02"
+    },
+    {
+      "employeeId": 14,
+      "date": "2026-03-06"
+    },
+    {
+      "employeeId": 14,
+      "date": "2026-03-11"
+    },
+    {
+      "employeeId": 14,
+      "date": "2026-03-17"
+    },
+    {
+      "employeeId": 14,
+      "date": "2026-03-20"
+    },
+    {
+      "employeeId": 14,
+      "date": "2026-03-27"
+    }
+  ],
+  "users": [
+    {
+      "id": "coordenador",
+      "username": "coordenador",
+      "password": "$2a$10$LWODBEijEQlA1DVrkiJMp.XF0GCo324.gqZLrJT1U/iggokvPspsy",
+      "name": "Coordenador",
+      "role": "admin",
+      "employeeId": null
+    },
+    {
+      "id": "carlos",
+      "username": "carlos",
+      "password": "$2a$10$59WDs1Luc4VWRTrBGY7FVeRpWdj7NKJWHwnshER6t2M9bcSaVkVRO",
+      "name": "Carlos",
+      "role": "employee",
+      "employeeId": 1
+    },
+    {
+      "id": "ana",
+      "username": "ana",
+      "password": "$2a$10$97ngN8OPMPdT.3NTMpmyqeZLPWICtDs0vyjR7M5crxDn7vj7RnoYq",
+      "name": "Ana",
+      "role": "employee",
+      "employeeId": 2
+    },
+    {
+      "id": "luiz",
+      "username": "luiz",
+      "password": "$2a$10$bsvd0XuVFBqvsBuPIt61suRASr7G6wQiNzzlNiwTBBFQBqxlv17OO",
+      "name": "Luiz",
+      "role": "employee",
+      "employeeId": 3
+    },
+    {
+      "id": "mariana",
+      "username": "mariana",
+      "password": "$2a$10$TMNv9sKXB7CYcAyU7h20C.JIyyeJgp2eVkK0125tD5W4R5dj3gMXO",
+      "name": "Mariana",
+      "role": "employee",
+      "employeeId": 4
+    },
+    {
+      "id": "pedro",
+      "username": "pedro",
+      "password": "$2a$10$Bi.2zuhIeWPT7jyxYnXafOtgKhVxiq/cv.HNx1rnB4.zS.nM059di",
+      "name": "Pedro",
+      "role": "employee",
+      "employeeId": 5
+    },
+    {
+      "id": "fernanda",
+      "username": "fernanda",
+      "password": "$2a$10$vBl9S2cplSiLUxymIpneo.TM8Y6RUXKdw/mobSKeo9UOIBl.zL8a6",
+      "name": "Fernanda",
+      "role": "employee",
+      "employeeId": 6
+    },
+    {
+      "id": "pedro",
+      "username": "pedro",
+      "password": "$2a$10$7L4gRxi3xnFxF.Vq26nuKehW0zVb2uL7neU/hby9Wn8NpI/vMNaY6",
+      "name": "pedro",
+      "role": "employee",
+      "employeeId": 7
+    },
+    {
+      "id": "anamartins",
+      "username": "anamartins",
+      "password": "$2a$10$Iik3tODfBL8bci31wpuKPOSoagtn6.3zWm3bpxL5i4I05apc/XP2G",
+      "name": "ana martins",
+      "role": "employee",
+      "employeeId": 8
+    },
+    {
+      "id": "arthur",
+      "username": "arthur",
+      "password": "$2a$10$21f9F7EwqaXCDi2xUIpSfO8GK83do5o0RRTkXSpacVauYvHVENOE2",
+      "name": "arthur",
+      "role": "employee",
+      "employeeId": 9
+    },
+    {
+      "id": "marcio",
+      "username": "marcio",
+      "password": "$2a$10$yMjt121Fk3MPxhlAW86rFuj44JP/F4ky3y6.55LT74e5raQl7Z1IO",
+      "name": "marcio",
+      "role": "employee",
+      "employeeId": 10
+    },
+    {
+      "id": "adrielle",
+      "username": "adrielle",
+      "password": "$2a$10$HVd7vZGBLCiAYNJ/T82Cl.6LJSV7UE3pnUGlY/uVf1AbodzgHqBu2",
+      "name": "adrielle",
+      "role": "employee",
+      "employeeId": 11
+    },
+    {
+      "id": "mariaeduarda",
+      "username": "mariaeduarda",
+      "password": "$2a$10$BAJzrb7J1HX.2MF6/c1nJ..c5PdWNhu3wvMZeXgzG0UEhFAaQxR1S",
+      "name": "mariaeduarda",
+      "role": "employee",
+      "employeeId": 12
+    },
+    {
+      "id": "joao.silva",
+      "username": "joao.silva",
+      "password": "$2a$10$l7dbGw0bGoEsWTqqro6Yt.JT5M844.ttk8F8eDNbKIgZrvd2JWhQ6",
+      "name": "João Silva",
+      "role": "employee",
+      "employeeId": 13
+    },
+    {
+      "id": "pedro.silva",
+      "username": "pedro.silva",
+      "password": "$2a$10$zdcYvRS9v0wC49/W4Qihyep0MySL3FRKYFBLypxHPXiNvmBLcUCn2",
+      "name": "Pedro de Almeida Leite Silva",
+      "role": "employee",
+      "employeeId": 14
+    }
+  ]
+}
