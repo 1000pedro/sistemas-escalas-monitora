@@ -234,7 +234,7 @@ app.post('/api/migrate-passwords', (req, res) => {
   });
 });
 
-const PORT = 3005;
+const PORT = 3000;
 
 app.listen(PORT, () => {
   console.log(`Servidor rodando na porta ${PORT}`);
