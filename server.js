@@ -1,3 +1,11 @@
+
+require('dotenv').config();
+const mongoose = require('mongoose');
+
+mongoose.connect(process.env.MONGO_URI)
+  .then(() => console.log('🔥 banco conectado'))
+  .catch(err => console.log('erro:', err));
+
 const express = require('express');
 const fs = require('fs');
 const path = require('path');
@@ -226,7 +234,8 @@ app.post('/api/migrate-passwords', (req, res) => {
   });
 });
 
-const PORT = process.env.PORT || 3000;
+const PORT = 3005;
+
 app.listen(PORT, () => {
-  console.log(`Servidor iniciado em http://localhost:${PORT}`);
+  console.log(`Servidor rodando na porta ${PORT}`);
 });
