@@ -1,72 +1,67 @@
-
 require('dotenv').config();
 const mongoose = require('mongoose');
+const express = require('express');
+const cors = require('cors');
+const bcrypt = require('bcryptjs');
 
 mongoose.connect(process.env.MONGO_URI)
   .then(() => console.log('🔥 banco conectado'))
   .catch(err => console.log('erro:', err));
 
-const express = require('express');
-const fs = require('fs');
-const path = require('path');
-const cors = require('cors');
-const bcrypt = require('bcryptjs');
+// Schemas
+const EmployeeSchema = new mongoose.Schema({
+  id: Number,
+  name: String,
+  turno: String
+});
+
+const UserSchema = new mongoose.Schema({
+  id: String,
+  username: { type: String, unique: true },
+  password: String,
+  name: String,
+  role: String,
+  employeeId: Number
+});
+
+const FolgaSchema = new mongoose.Schema({
+  employeeId: Number,
+  date: String
+});
+
+const SettingsSchema = new mongoose.Schema({
+  cycleStart: String
+});
+
+const Employee = mongoose.model('Employee', EmployeeSchema);
+const User = mongoose.model('User', UserSchema);
+const Folga = mongoose.model('Folga', FolgaSchema);
+const Settings = mongoose.model('Settings', SettingsSchema);
 
 const app = express();
-const DATA_FILE = path.join(__dirname, 'data.json');
-
 app.use(cors());
 app.use(express.json());
 app.use(express.static(__dirname));
 
-function loadData() {
-  if (!fs.existsSync(DATA_FILE)) {
-    return {
-      turnos: ['Madrugada', 'Manhã', 'Tarde', 'Noite'],
-      settings: { cycleStart: '2026-04-01' },
-      employees: [],
-      folgas: [],
-      users: []
-    };
+async function getSettings() {
+  let settings = await Settings.findOne();
+  if (!settings) {
+    settings = await Settings.create({ cycleStart: '2026-04-01' });
   }
-
-  const raw = fs.readFileSync(DATA_FILE, 'utf8');
-  try {
-    return JSON.parse(raw);
-  } catch (err) {
-    console.error('Erro ao ler data.json:', err);
-    return {
-      turnos: ['Madrugada', 'Manhã', 'Tarde', 'Noite'],
-      settings: { cycleStart: '2026-04-01' },
-      employees: [],
-      folgas: [],
-      users: []
-    };
-  }
+  return settings;
 }
 
-function saveData(data) {
-  fs.writeFileSync(DATA_FILE, JSON.stringify(data, null, 2), 'utf8');
-}
-
-function sanitizeData(data) {
-  return {
-    ...data,
-    users: (data.users || []).map(({ password, ...rest }) => rest)
-  };
-}
-
-function buildSchedule(data, days = 14) {
-  const start = new Date(data.settings.cycleStart);
+function buildSchedule(employees, folgas, cycleStart, days = 14) {
+  const start = new Date(cycleStart);
   const schedule = [];
 
-  for (let dayIndex = 0; dayIndex < days; dayIndex += 1) {
+  for (let dayIndex = 0; dayIndex < days; dayIndex++) {
     const date = new Date(start);
     date.setDate(start.getDate() + dayIndex);
     const isoDate = date.toISOString().slice(0, 10);
 
-    data.employees.forEach((employee) => {
-      const customFolga = data.folgas.some(
+    employees.forEach((employee) => {
+      const customFolga = folgas.some(
         (f) => f.employeeId === employee.id && f.date === isoDate
       );
       const cycleOff = ((dayIndex + employee.id) % 7) === 6;
@@ -86,65 +81,92 @@ function buildSchedule(data, days = 14) {
   return schedule;
 }
 
-app.post('/api/login', (req, res) => {
+app.post('/api/login', async (req, res) => {
   const { username, password } = req.body;
   if (!username || !password) {
     return res.status(400).json({ error: 'Usuário e senha são obrigatórios.' });
   }
 
-  const data = loadData();
-  const user = (data.users || []).find(u => u.username === username);
-
+  const user = await User.findOne({ username });
   if (!user) {
     return res.status(401).json({ error: 'Usuário ou senha inválidos.' });
   }
 
-  // Verificar senha com bcrypt (ou compatibilidade com senhas antigas em plain text)
   const passwordMatch = user.password.startsWith('$2a$') || user.password.startsWith('$2b$')
     ? bcrypt.compareSync(password, user.password)
-    : user.password === password; // Compatibilidade com senhas antigas
+    : user.password === password;
 
   if (!passwordMatch) {
     return res.status(401).json({ error: 'Usuário ou senha inválidos.' });
   }
 
-  const schedule = buildSchedule(data, 14);
-  const sanitizedData = sanitizeData(data);
-  const userPayload = {
-    id: user.id,
-    name: user.name,
-    role: user.role,
-    employeeId: user.employeeId
-  };
+  const employees = await Employee.find();
+  const folgas = await Folga.find();
+  const settings = await getSettings();
+  const schedule = buildSchedule(employees, folgas, settings.cycleStart);
 
-  res.json({ user: userPayload, data: sanitizedData, schedule });
+  const usersRaw = await User.find();
+  const sanitizedUsers = usersRaw.map(({ _doc }) => {
+    const { password, ...rest } = _doc;
+    return rest;
+  });
+
+  res.json({
+    user: { id: user.id, name: user.name, role: user.role, employeeId: user.employeeId },
+    data: {
+      turnos: ['Madrugada', 'Manhã', 'Tarde', 'Noite'],
+      settings: { cycleStart: settings.cycleStart },
+      employees,
+      folgas,
+      users: sanitizedUsers
+    },
+    schedule
+  });
 });
 
-app.get('/api/data', (req, res) => {
-  const data = loadData();
-  const schedule = buildSchedule(data, 14);
-  res.json({ data: sanitizeData(data), schedule });
+app.get('/api/data', async (req, res) => {
+  const employees = await Employee.find();
+  const folgas = await Folga.find();
+  const settings = await getSettings();
+  const schedule = buildSchedule(employees, folgas, settings.cycleStart);
+
+  const usersRaw = await User.find();
+  const sanitizedUsers = usersRaw.map((u) => {
+    const obj = u.toObject();
+    delete obj.password;
+    return obj;
+  });
+
+  res.json({
+    data: {
+      turnos: ['Madrugada', 'Manhã', 'Tarde', 'Noite'],
+      settings: { cycleStart: settings.cycleStart },
+      employees,
+      folgas,
+      users: sanitizedUsers
+    },
+    schedule
+  });
 });
 
-app.post('/api/folgas', (req, res) => {
+app.post('/api/folgas', async (req, res) => {
   const incoming = req.body;
   if (!incoming || !Array.isArray(incoming.folgas)) {
     return res.status(400).json({ error: 'Formato inválido. Esperado { folgas: [...] }' });
   }
 
-  const data = loadData();
-  data.folgas = incoming.folgas;
-  saveData(data);
-  res.json({ success: true, folgas: data.folgas });
+  await Folga.deleteMany({});
+  await Folga.insertMany(incoming.folgas);
+  const folgas = await Folga.find();
+  res.json({ success: true, folgas });
 });
 
-app.post('/api/funcionario', (req, res) => {
+app.post('/api/funcionario', async (req, res) => {
   const { name, username, password, turno } = req.body;
   if (!name || !username || !password || !turno) {
     return res.status(400).json({ error: 'Nome, usuário, senha e turno são obrigatórios.' });
   }
 
-  // Validações básicas
   if (username.length < 3) {
     return res.status(400).json({ error: 'Nome de usuário deve ter pelo menos 3 caracteres.' });
   }
@@ -152,29 +174,18 @@ app.post('/api/funcionario', (req, res) => {
     return res.status(400).json({ error: 'Senha deve ter pelo menos 6 caracteres.' });
   }
 
-  const data = loadData();
-  
-  // Verificar se username já existe
-  const existingUser = data.users.find(u => u.username === username);
+  const existingUser = await User.findOne({ username });
   if (existingUser) {
     return res.status(400).json({ error: 'Nome de usuário já existe. Escolha outro.' });
   }
-  
-  // Gerar ID único para funcionário
-  const newId = Math.max(...data.employees.map(e => e.id), 0) + 1;
-  
-  // Criar funcionário
-  data.employees.push({
-    id: newId,
-    name,
-    turno
-  });
 
-  // Hash da senha com bcrypt
+  const employees = await Employee.find();
+  const newId = employees.length > 0 ? Math.max(...employees.map(e => e.id)) + 1 : 1;
+
+  await Employee.create({ id: newId, name, turno });
+
   const hashedPassword = bcrypt.hashSync(password, 10);
-  
-  // Criar usuário
-  data.users.push({
+  await User.create({
     id: username,
     username,
     password: hashedPassword,
@@ -183,59 +194,25 @@ app.post('/api/funcionario', (req, res) => {
     employeeId: newId
   });
 
-  saveData(data);
-  res.json({ 
-    success: true, 
+  res.json({
+    success: true,
     employee: { id: newId, name, turno },
     username,
-    password  // Retorna senha em plain text para mostrar ao coordenador
+    password
   });
 });
 
-app.delete('/api/funcionario/:id', (req, res) => {
+app.delete('/api/funcionario/:id', async (req, res) => {
   const employeeId = parseInt(req.params.id, 10);
-  const data = loadData();
 
-  // Remover funcionário
-  data.employees = data.employees.filter(e => e.id !== employeeId);
+  await Employee.deleteOne({ id: employeeId });
+  await User.deleteOne({ employeeId });
+  await Folga.deleteMany({ employeeId });
 
-  // Remover usuário associado
-  const userToRemove = data.users.find(u => u.employeeId === employeeId);
-  if (userToRemove) {
-    data.users = data.users.filter(u => u.id !== userToRemove.id);
-  }
-
-  // Remover folgas do funcionário
-  data.folgas = data.folgas.filter(f => f.employeeId !== employeeId);
-
-  saveData(data);
   res.json({ success: true, message: 'Funcionário removido.' });
 });
 
-app.post('/api/migrate-passwords', (req, res) => {
-  const data = loadData();
-  let migratedCount = 0;
-
-  if (data.users) {
-    data.users = data.users.map(user => {
-      // Se a senha não está em hash (não começa com $2a$ ou $2b$), fazer hash
-      if (!user.password.startsWith('$2a$') && !user.password.startsWith('$2b$')) {
-        user.password = bcrypt.hashSync(user.password, 10);
-        migratedCount++;
-      }
-      return user;
-    });
-  }
-
-  saveData(data);
-  res.json({ 
-    success: true, 
-    message: `Migração concluída. ${migratedCount} senhas criptografadas.`
-  });
-});
-
-const PORT = 3000;
-
+const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Servidor rodando na porta ${PORT}`);
 });
