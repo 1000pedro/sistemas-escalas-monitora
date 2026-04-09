@@ -1,4 +1,4 @@
-const API_BASE = 'http://localhost:3000';
+const API_BASE = 'https://sistemas-escalas-monitora.onrender.com';
 const loginPanel = document.getElementById('loginPanel');
 const appPanel = document.getElementById('appPanel');
 const loginBtn = document.getElementById('loginBtn');
