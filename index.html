@@ -3,35 +3,53 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema de Escalas</title>
+    <title>Sistema de Escalas — Monitora Piracicaba</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="treino.css">
 </head>
 <body>
     <header>
-        <h1>Sistema de Escalas MONITORA PIRACICABA</h1>
+        <div class="header-inner">
+            <span class="header-logo" aria-hidden="true">📋</span>
+            <div class="header-text">
+                <h1>Sistema de Escalas</h1>
+                <span class="header-sub">Monitora Piracicaba</span>
+            </div>
+        </div>
     </header>
 
     <main>
         <section id="loginPanel" class="panel">
-            <h2>Login</h2>
-            <div class="card login-card">
-                <label for="usernameInput">Usuário</label>
-                <input id="usernameInput" type="text" placeholder="Digite seu usuário">
-
-                <label for="passwordInput">Senha</label>
-                <input id="passwordInput" type="password" placeholder="Digite sua senha">
-
+            <div class="login-brand">
+                <div class="login-logo" aria-hidden="true">📋</div>
+                <h2>Bem-vindo</h2>
+                <p class="login-company">Monitora Piracicaba · Sistema de Escalas</p>
+            </div>
+            <div class="login-form">
+                <div>
+                    <label for="usernameInput">Usuário</label>
+                    <input id="usernameInput" type="text" placeholder="Digite seu usuário" autocomplete="username">
+                </div>
+                <div>
+                    <label for="passwordInput">Senha</label>
+                    <input id="passwordInput" type="password" placeholder="Digite sua senha" autocomplete="current-password">
+                </div>
                 <button id="loginBtn" class="primary">Entrar</button>
             </div>
         </section>
 
         <section id="appPanel" class="hidden">
             <section class="panel user-header">
-                <div>
-                    <p>Usuário: <strong id="loggedName">-</strong></p>
-                    <p>Perfil: <strong id="loggedRole">-</strong></p>
+                <div class="user-info-group">
+                    <div id="userAvatar" class="user-avatar">?</div>
+                    <div class="user-info">
+                        <span id="loggedName" class="user-name">-</span>
+                        <span id="loggedRole" class="user-role-badge">-</span>
+                    </div>
                 </div>
-                <button id="logoutBtn" class="secondary">Sair</button>
+                <button id="logoutBtn" class="secondary">↪ Sair</button>
             </section>
 
             <section id="adminPanel" class="panel hidden">
@@ -172,9 +190,12 @@
 
             <section id="employeePanel" class="panel hidden">
                 <h2>Meu Calendário de Escala</h2>
-                <div class="card">
-                    <p><strong>Funcionário:</strong> <span id="employeeName">-</span></p>
-                    <p><strong>Turno:</strong> <span id="employeeShift">-</span></p>
+                <div class="employee-info-card">
+                    <div class="employee-info-avatar" id="employeeInfoAvatar">?</div>
+                    <div class="employee-info-details">
+                        <span id="employeeName" class="employee-info-name">-</span>
+                        <span id="employeeShift" class="shift-badge-pill">-</span>
+                    </div>
                 </div>
 
                 <div class="card">
@@ -202,6 +223,21 @@
             </section>
         </section>
     </main>
+
+    <!-- Toast Container -->
+    <div id="toastContainer"></div>
+
+    <!-- Confirm Modal -->
+    <div id="confirmModal" role="dialog" aria-modal="true">
+        <div class="confirm-dialog">
+            <h3 id="confirmTitle">Confirmar ação</h3>
+            <p id="confirmMessage">Tem certeza?</p>
+            <div class="confirm-actions">
+                <button id="confirmCancelBtn" class="secondary">Cancelar</button>
+                <button id="confirmOkBtn" class="btn-danger">Confirmar</button>
+            </div>
+        </div>
+    </div>
 
     <script src="treino.js"></script>
 </body>

@@ -1,4 +1,46 @@
 const API_BASE = 'https://sistemas-escalas-monitora.onrender.com';
+
+/* ── Toast notifications ── */
+function showToast(message, type = 'info', duration = 4500) {
+  const container = document.getElementById('toastContainer');
+  const icons = { success: '✅', error: '❌', info: 'ℹ️', warning: '⚠️' };
+  const toast = document.createElement('div');
+  toast.className = `toast toast-${type}`;
+  toast.innerHTML = `<span class="toast-icon">${icons[type] || 'ℹ️'}</span><span class="toast-body">${message}</span>`;
+  toast.addEventListener('click', () => _removeToast(toast));
+  container.appendChild(toast);
+  const timer = setTimeout(() => _removeToast(toast), duration);
+  toast._timer = timer;
+}
+
+function _removeToast(toast) {
+  clearTimeout(toast._timer);
+  toast.classList.add('toast-closing');
+  setTimeout(() => toast.remove(), 300);
+}
+
+/* ── Confirm modal ── */
+function showConfirm(message, onConfirm, { title = 'Confirmar ação', confirmText = 'Confirmar' } = {}) {
+  const modal    = document.getElementById('confirmModal');
+  const msgEl    = document.getElementById('confirmMessage');
+  const titleEl  = document.getElementById('confirmTitle');
+  const okBtn    = document.getElementById('confirmOkBtn');
+  const cancelBtn= document.getElementById('confirmCancelBtn');
+
+  titleEl.textContent  = title;
+  msgEl.textContent    = message;
+  okBtn.textContent    = confirmText;
+  modal.classList.add('active');
+
+  const cleanup = () => {
+    modal.classList.remove('active');
+    okBtn.onclick     = null;
+    cancelBtn.onclick = null;
+  };
+
+  okBtn.onclick     = () => { cleanup(); onConfirm(); };
+  cancelBtn.onclick = cleanup;
+}
 const loginPanel = document.getElementById('loginPanel');
 const appPanel = document.getElementById('appPanel');
 const loginBtn = document.getElementById('loginBtn');
@@ -57,10 +99,16 @@ function formatDate(date) {
   return `${day}/${month}/${year}`;
 }
 
+const MONTH_NAMES = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
+const WEEKDAY_NAMES = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
+
 function formatMonthLabel(date) {
   const d = new Date(date);
-  const monthNames = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
-  return `${monthNames[d.getMonth()]} ${d.getFullYear()}`;
+  return `${MONTH_NAMES[d.getMonth()]} ${d.getFullYear()}`;
+}
+
+function getInitials(name) {
+  return name.split(' ').filter(Boolean).slice(0, 2).map(n => n[0].toUpperCase()).join('') || '?';
 }
 
 function getMonthStart(date) {
@@ -130,12 +178,12 @@ function sendNotification() {
   const message = notificationMessage.value.trim();
   
   if (!message) {
-    alert('Digite uma mensagem para a notificação.');
+    showToast('Digite uma mensagem para a notificação.', 'warning');
     return;
   }
-  
+
   if (type === 'specific' && !employeeId) {
-    alert('Selecione um funcionário para notificação específica.');
+    showToast('Selecione um funcionário para notificação específica.', 'warning');
     return;
   }
   
@@ -154,8 +202,8 @@ function sendNotification() {
   
   notificationMessage.value = '';
   notificationEmployee.value = '';
-  
-  alert('Notificação enviada com sucesso!');
+
+  showToast('Notificação enviada com sucesso!', 'success');
 }
 
 function renderNotifications() {
@@ -189,9 +237,7 @@ function renderNotifications() {
     message.textContent = notification.message;
     
     const sender = document.createElement('div');
-    sender.style.fontSize = '12px';
-    sender.style.color = '#6b7280';
-    sender.style.marginTop = '5px';
+    sender.className = 'notification-sender';
     sender.textContent = `Por: ${notification.sender}`;
     
     div.appendChild(header);
@@ -213,69 +259,45 @@ function renderEmployeeNotifications() {
   ).sort((a, b) => new Date(b.date) - new Date(a.date));
   
   if (userNotifications.length === 0) {
-    employeeNotificationsList.innerHTML = '<p style="color: #6b7280; font-style: italic;">Você não tem notificações no momento.</p>';
+    employeeNotificationsList.innerHTML = '<div class="empty-state"><span class="empty-state-icon">🔔</span><span class="empty-state-text">Você não tem notificações no momento.</span></div>';
     return;
   }
-  
+
   userNotifications.forEach(notification => {
     const div = document.createElement('div');
-    div.className = 'notification-item';
+    div.className = `notification-item type-${notification.type}`;
     
     const header = document.createElement('div');
     header.className = 'notification-header';
     
     const leftContent = document.createElement('div');
-    leftContent.style.display = 'flex';
-    leftContent.style.alignItems = 'center';
-    leftContent.style.gap = '12px';
-    leftContent.style.flex = '1';
-    
+    leftContent.className = 'notification-left-content';
+
     const type = document.createElement('span');
     type.className = 'notification-type';
     type.textContent = notification.type === 'general' ? '📢 Geral' : '📬 Pessoal';
-    type.style.fontWeight = '600';
-    
+
     const date = document.createElement('span');
     date.className = 'notification-date';
     date.textContent = formatDate(new Date(notification.date));
-    
+
     leftContent.appendChild(type);
     leftContent.appendChild(date);
-    
+
     const deleteBtn = document.createElement('button');
     deleteBtn.className = 'delete-notification-btn';
     deleteBtn.textContent = '✕';
-    deleteBtn.style.background = '#ef4444';
-    deleteBtn.style.color = 'white';
-    deleteBtn.style.border = 'none';
-    deleteBtn.style.borderRadius = '4px';
-    deleteBtn.style.width = '24px';
-    deleteBtn.style.height = '24px';
-    deleteBtn.style.cursor = 'pointer';
-    deleteBtn.style.fontSize = '14px';
-    deleteBtn.style.padding = '0';
-    deleteBtn.style.display = 'flex';
-    deleteBtn.style.alignItems = 'center';
-    deleteBtn.style.justifyContent = 'center';
-    deleteBtn.style.transition = 'background-color 0.2s';
-    deleteBtn.onclick = () => {
-      deleteNotification(notification.id);
-    };
-    deleteBtn.onmouseover = () => deleteBtn.style.background = '#dc2626';
-    deleteBtn.onmouseout = () => deleteBtn.style.background = '#ef4444';
-    
+    deleteBtn.onclick = () => deleteNotification(notification.id);
+
     header.appendChild(leftContent);
     header.appendChild(deleteBtn);
-    
+
     const message = document.createElement('div');
+    message.className = 'notification-message';
     message.textContent = notification.message;
-    message.style.marginTop = '8px';
-    message.style.lineHeight = '1.4';
-    
+
     const sender = document.createElement('div');
-    sender.style.fontSize = '12px';
-    sender.style.color = '#6b7280';
-    sender.style.marginTop = '5px';
+    sender.className = 'notification-sender';
     sender.textContent = `De: ${notification.sender}`;
     
     div.appendChild(header);
@@ -332,7 +354,7 @@ function generateMonthlyReport(shift = null) {
     name.textContent = employee.name;
     
     const shift = document.createElement('span');
-    shift.className = 'employee-shift';
+    shift.className = `shift-badge-pill ${employee.turno}`;
     shift.textContent = employee.turno;
     
     header.appendChild(name);
@@ -383,9 +405,14 @@ function login() {
   const password = passwordInput.value;
 
   if (!username || !password) {
-    alert('Preencha usuário e senha para continuar.');
+    showToast('Preencha usuário e senha para continuar.', 'warning');
     return;
   }
+
+  const originalText = loginBtn.textContent;
+  loginBtn.classList.add('btn-loading');
+  loginBtn.disabled = true;
+  loginBtn.textContent = 'Entrando…';
 
   fetch(`${API_BASE}/api/login`, {
     method: 'POST',
@@ -411,6 +438,10 @@ function login() {
       return json;
     })
     .then((json) => {
+      loginBtn.classList.remove('btn-loading');
+      loginBtn.disabled = false;
+      loginBtn.textContent = originalText;
+
       currentUser = json.user;
       appData = json.data;
       scheduleData = json.schedule;
@@ -429,6 +460,10 @@ function login() {
 
       loggedName.textContent = currentUser.name;
       loggedRole.textContent = currentUser.role === 'admin' ? 'Coordenador' : 'Funcionário';
+      loggedRole.className = `user-role-badge ${currentUser.role}`;
+
+      const userAvatar = document.getElementById('userAvatar');
+      if (userAvatar) userAvatar.textContent = getInitials(currentUser.name);
       populateEmployees();
       handleRoleView();
       renderFolgas();
@@ -442,8 +477,11 @@ function login() {
       }
     })
     .catch((error) => {
+      loginBtn.classList.remove('btn-loading');
+      loginBtn.disabled = false;
+      loginBtn.textContent = originalText;
       console.error(error);
-      alert(error.message || 'Erro ao fazer login.');
+      showToast(error.message || 'Erro ao fazer login.', 'error');
     });
 }
 
@@ -466,55 +504,103 @@ function populateEmployees() {
 function renderShiftCalendar(shiftName, startDate = null) {
   shiftDetailCalendar.innerHTML = '';
   const employeesInShift = appData.employees.filter(e => e.turno === shiftName);
+
   if (!employeesInShift.length) {
-    shiftDetailCalendar.textContent = 'Não há funcionários cadastrados para este turno.';
+    shiftDetailCalendar.innerHTML = '<div class="empty-state"><span class="empty-state-icon">👥</span><span class="empty-state-text">Nenhum funcionário cadastrado neste turno.</span></div>';
     return;
   }
 
   const baseDate = startDate ? new Date(startDate) : new Date(appData.settings.cycleStart);
-  const monthStart = getMonthStart(baseDate);
-  const dates = getMonthDates(monthStart);
+  const dates = getMonthDates(getMonthStart(baseDate));
+  const today = new Date().toISOString().slice(0, 10);
 
   const table = document.createElement('table');
   table.className = 'calendar-table';
 
+  // ─── Cabeçalho ───
+  const thead = document.createElement('thead');
   const headerRow = document.createElement('tr');
-  const nameCell = document.createElement('th');
-  nameCell.textContent = 'Funcionário';
-  headerRow.appendChild(nameCell);
+
+  const nameTh = document.createElement('th');
+  nameTh.className = 'col-name';
+  nameTh.textContent = 'Funcionário';
+  headerRow.appendChild(nameTh);
 
   dates.forEach((date) => {
+    const d = new Date(`${date}T12:00:00`);
+    const dow = d.getDay();
+    const [,, day] = date.split('-');
     const th = document.createElement('th');
-    const [, month, day] = date.split('-');
-    th.textContent = `${day}/${month}`;
+    th.className = [
+      (dow === 0 || dow === 6) ? 'col-weekend' : '',
+      date === today ? 'col-today' : ''
+    ].filter(Boolean).join(' ');
+    th.innerHTML = `<span class="col-weekday">${WEEKDAY_NAMES[dow]}</span><span class="col-date-num">${day}</span>`;
     headerRow.appendChild(th);
   });
-  table.appendChild(headerRow);
+
+  const totalTh = document.createElement('th');
+  totalTh.className = 'col-total';
+  totalTh.innerHTML = '<span class="col-weekday">Total</span><span class="col-date-num">dias</span>';
+  headerRow.appendChild(totalTh);
+
+  thead.appendChild(headerRow);
+  table.appendChild(thead);
+
+  // ─── Linhas de funcionários ───
+  const tbody = document.createElement('tbody');
 
   employeesInShift.forEach((employee) => {
     const row = document.createElement('tr');
-    const nameCell = document.createElement('td');
-    nameCell.textContent = employee.name;
-    nameCell.style.fontWeight = '600';
-    nameCell.style.textAlign = 'left';
-    row.appendChild(nameCell);
+
+    const nameTd = document.createElement('td');
+    nameTd.className = 'col-name';
+    nameTd.textContent = employee.name;
+    row.appendChild(nameTd);
+
+    let workingCount = 0;
 
     dates.forEach((date) => {
-      const cell = document.createElement('td');
+      const d = new Date(`${date}T12:00:00`);
+      const dow = d.getDay();
       const scheduleItem = getScheduleStatus(employee.id, date);
+      const cell = document.createElement('td');
+      cell.className = [
+        (dow === 0 || dow === 6) ? 'col-weekend' : '',
+        date === today ? 'col-today' : ''
+      ].filter(Boolean).join(' ');
+
       const span = document.createElement('span');
       span.className = `schedule-day ${scheduleItem.working ? 'working' : 'off'}`;
       span.textContent = scheduleItem.working ? 'T' : 'F';
-      span.style.cursor = 'pointer';
       span.onclick = () => toggleScheduleDay(employee.id, date, span);
       cell.appendChild(span);
       row.appendChild(cell);
+
+      if (scheduleItem.working) workingCount++;
     });
 
-    table.appendChild(row);
+    const totalTd = document.createElement('td');
+    totalTd.className = 'col-total';
+    totalTd.dataset.emp = employee.id;
+    totalTd.innerHTML = `<span class="total-working">${workingCount}</span><span class="total-sep">/</span><span class="total-days">${dates.length}</span>`;
+    row.appendChild(totalTd);
+
+    tbody.appendChild(row);
   });
 
+  table.appendChild(tbody);
   shiftDetailCalendar.appendChild(table);
+
+  // ─── Legenda ───
+  const legend = document.createElement('div');
+  legend.className = 'schedule-legend';
+  legend.innerHTML = `
+    <span class="legend-item"><span class="schedule-day working">T</span> Trabalhando</span>
+    <span class="legend-item"><span class="schedule-day off">F</span> Folga</span>
+    <span class="legend-tip">Clique em um dia para alternar &nbsp;·&nbsp; Salve após editar</span>
+  `;
+  shiftDetailCalendar.appendChild(legend);
 }
 
 function openShiftDetail(shiftName) {
@@ -540,13 +626,19 @@ function toggleScheduleDay(employeeId, date, element) {
       f => !(f.employeeId === employeeId && f.date === date)
     );
     element.textContent = 'T';
-    element.classList.remove('off');
-    element.classList.add('working');
+    element.classList.replace('off', 'working');
   } else {
     appData.folgas.push({ employeeId, date });
     element.textContent = 'F';
-    element.classList.remove('working');
-    element.classList.add('off');
+    element.classList.replace('working', 'off');
+  }
+
+  // Atualiza coluna de total para este funcionário
+  const totalTd = shiftDetailCalendar.querySelector(`td.col-total[data-emp="${employeeId}"]`);
+  if (totalTd) {
+    const dates = getMonthDates(getMonthStart(adminPeriodStart));
+    const wc = dates.filter(d => getScheduleStatus(employeeId, d).working).length;
+    totalTd.innerHTML = `<span class="total-working">${wc}</span><span class="total-sep">/</span><span class="total-days">${dates.length}</span>`;
   }
 
   renderFolgas();
@@ -581,6 +673,10 @@ function renderEmployeeView() {
 
   employeeNameDisplay.textContent = employee.name;
   employeeShift.textContent = employee.turno;
+  employeeShift.className = `shift-badge-pill ${employee.turno}`;
+
+  const infoAvatar = document.getElementById('employeeInfoAvatar');
+  if (infoAvatar) infoAvatar.textContent = getInitials(employee.name);
 
   renderEmployeeNotifications();
 
@@ -601,15 +697,20 @@ function renderEmployeeCalendar(employeeId, startDate = null) {
     const dayDiv = document.createElement('div');
     dayDiv.className = `employee-day ${scheduleItem.working ? 'working' : 'off'}`;
 
+    const [, month, dayNum] = date.split('-');
+    const weekdayDiv = document.createElement('div');
+    weekdayDiv.className = 'employee-day-weekday';
+    weekdayDiv.textContent = WEEKDAY_NAMES[new Date(`${date}T12:00:00`).getDay()];
+
     const dateDiv = document.createElement('div');
     dateDiv.className = 'employee-day-date';
-    const [, month, dayNum] = date.split('-');
     dateDiv.textContent = `${dayNum}/${month}`;
 
     const statusDiv = document.createElement('div');
     statusDiv.className = 'employee-day-status';
     statusDiv.textContent = scheduleItem.working ? '✓' : '✕';
 
+    dayDiv.appendChild(weekdayDiv);
     dayDiv.appendChild(dateDiv);
     dayDiv.appendChild(statusDiv);
     container.appendChild(dayDiv);
@@ -632,7 +733,7 @@ function renderEmployeesList() {
     item.innerHTML = `
       <div>
         <strong>${employee.name}</strong>
-        <span class="employee-shift">${employee.turno}</span>
+        <span class="shift-badge-pill ${employee.turno}">${employee.turno}</span>
         <span class="employee-status active">Ativo</span>
       </div>
       <button class="btn-remove" onclick="removeEmployee(${employee.id})">Remover</button>
@@ -648,17 +749,16 @@ function addEmployee() {
   const turno = newEmpTurno.value;
 
   if (!name || !username || !password || !turno) {
-    alert('Preencha todos os campos: nome, usuário, senha e turno do funcionário');
+    showToast('Preencha todos os campos: nome, usuário, senha e turno.', 'warning');
     return;
   }
 
-  // Validações básicas
   if (username.length < 3) {
-    alert('O nome de usuário deve ter pelo menos 3 caracteres');
+    showToast('O nome de usuário deve ter pelo menos 3 caracteres.', 'warning');
     return;
   }
   if (password.length < 6) {
-    alert('A senha deve ter pelo menos 6 caracteres');
+    showToast('A senha deve ter pelo menos 6 caracteres.', 'warning');
     return;
   }
 
@@ -709,15 +809,19 @@ function addEmployee() {
     })
     .catch((error) => {
       console.error(error);
-      alert('Erro: ' + error.message);
+      showToast('Erro: ' + error.message, 'error');
     });
 }
 
 function removeEmployee(employeeId) {
-  if (!confirm('Tem certeza que deseja remover este funcionário?')) {
-    return;
-  }
+  showConfirm(
+    'Esta ação é permanente e removerá também o acesso do funcionário ao sistema.',
+    () => _doRemoveEmployee(employeeId),
+    { title: 'Remover funcionário?', confirmText: 'Remover' }
+  );
+}
 
+function _doRemoveEmployee(employeeId) {
   fetch(`${API_BASE}/api/funcionario/${employeeId}`, {
     method: 'DELETE',
     headers: { 'Content-Type': 'application/json' }
@@ -741,12 +845,12 @@ function removeEmployee(employeeId) {
             renderShiftCalendar(currentShiftView, adminPeriodStart);
           }
           renderFolgas();
-          alert('Funcionário removido com sucesso');
+          showToast('Funcionário removido com sucesso.', 'success');
         });
     })
     .catch((error) => {
       console.error(error);
-      alert('Erro: ' + error.message);
+      showToast('Erro: ' + error.message, 'error');
     });
 }
 
@@ -763,11 +867,11 @@ function saveFolgas() {
       return response.json();
     })
     .then(() => {
-      alert('Folgas salvas com sucesso!');
+      showToast('Folgas salvas com sucesso!', 'success');
     })
     .catch((error) => {
       console.error(error);
-      alert('Erro ao salvar folgas. Veja o console do navegador.');
+      showToast('Erro ao salvar folgas. Verifique o console.', 'error');
     });
 }
 
@@ -863,3 +967,8 @@ empPeriodStartDate.addEventListener('change', setEmployeeCustomDate);
 notificationType.addEventListener('change', toggleNotificationType);
 sendNotificationBtn.addEventListener('click', sendNotification);
 generateReportBtn.addEventListener('click', generateMonthlyReport);
+
+// Enter key submits login
+[usernameInput, passwordInput].forEach(el => {
+  el.addEventListener('keydown', e => { if (e.key === 'Enter') login(); });
+});
