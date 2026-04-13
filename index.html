@@ -156,188 +156,273 @@
         </section>
 
         <section id="appPanel" class="hidden">
-            <section class="panel user-header">
-                <div class="user-info-group">
-                    <div id="userAvatar" class="user-avatar">?</div>
-                    <div class="user-info">
-                        <span id="loggedName" class="user-name">-</span>
-                        <span id="loggedRole" class="user-role-badge">-</span>
+
+            <!-- ── Topbar do usuário logado ── -->
+            <div class="app-topbar">
+                <div class="app-topbar-inner">
+                    <div class="topbar-page-title" id="topbarPageTitle">Painel</div>
+                    <div class="topbar-user">
+                        <div id="userAvatar" class="user-avatar">?</div>
+                        <div class="user-info">
+                            <span id="loggedName" class="user-name">-</span>
+                            <span id="loggedRole" class="user-role-badge">-</span>
+                        </div>
+                        <button id="logoutBtn" class="secondary topbar-logout-btn">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+                                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/>
+                            </svg>
+                            Sair
+                        </button>
                     </div>
                 </div>
-                <button id="logoutBtn" class="secondary">↪ Sair</button>
+            </div>
+
+            <!-- ── Painel Admin ── -->
+            <section id="adminPanel" class="hidden">
+                <div class="dash-container">
+
+                    <!-- Cabeçalho da página -->
+                    <div class="dash-page-header">
+                        <div>
+                            <h2 class="dash-title">Gerenciamento de Escalas</h2>
+                            <p class="dash-subtitle">CIIP · Painel de Coordenação</p>
+                        </div>
+                    </div>
+
+                    <!-- Período da Escala -->
+                    <div class="card">
+                        <div class="card-header-row">
+                            <span class="card-section-icon">📅</span>
+                            <h3>Período da Escala</h3>
+                        </div>
+                        <div class="period-nav">
+                            <button id="prevPeriodBtn" class="secondary">← Anterior</button>
+                            <div>
+                                <label for="periodStartDate">Mês de referência:</label>
+                                <input id="periodStartDate" type="date">
+                            </div>
+                            <button id="nextPeriodBtn" class="secondary">Próximo →</button>
+                        </div>
+                        <p id="periodDisplay" class="period-info">Carregando...</p>
+                    </div>
+
+                    <!-- Relatórios -->
+                    <div class="card">
+                        <div class="card-header-row">
+                            <span class="card-section-icon">📊</span>
+                            <h3>Relatórios</h3>
+                        </div>
+                        <p class="card-desc">Gere o relatório mensal completo com dados de presença e folgas de todos os turnos.</p>
+                        <div class="reports-section">
+                            <button id="generateReportBtn" class="primary">Gerar Relatório Mensal</button>
+                            <div id="reportsContainer" class="hidden"></div>
+                        </div>
+                    </div>
+
+                    <!-- Linha 2: Adicionar Funcionário (grid interno 2 colunas) -->
+                    <div class="card">
+                        <div class="card-header-row">
+                            <span class="card-section-icon">👤</span>
+                            <h3>Adicionar Funcionário</h3>
+                        </div>
+                        <div class="emp-form-grid">
+                            <div class="emp-field">
+                                <label for="newEmpName">Nome completo</label>
+                                <input id="newEmpName" type="text" placeholder="Ex: João Silva">
+                            </div>
+                            <div class="emp-field">
+                                <label for="newEmpUsername">Usuário de acesso</label>
+                                <input id="newEmpUsername" type="text" placeholder="Ex: joao.silva">
+                            </div>
+                            <div class="emp-field">
+                                <label for="newEmpPassword">Senha</label>
+                                <input id="newEmpPassword" type="password" placeholder="Mínimo 6 caracteres">
+                            </div>
+                            <div class="emp-field">
+                                <label for="newEmpTurno">Turno</label>
+                                <select id="newEmpTurno">
+                                    <option value="">Selecione um turno</option>
+                                    <option value="Madrugada">🌙 Madrugada</option>
+                                    <option value="Manhã">☀️ Manhã</option>
+                                    <option value="Tarde">🌤️ Tarde</option>
+                                    <option value="Noite">🌃 Noite</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="emp-form-footer">
+                            <button id="addEmpBtn" class="primary">
+                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                                Adicionar Funcionário
+                            </button>
+                        </div>
+                        <div id="newEmpResult" class="hidden">
+                            <strong>Funcionário criado com sucesso!</strong><br>
+                            <span id="newEmpCredentials"></span>
+                        </div>
+                    </div>
+
+                    <!-- Linha 3: Funcionários Cadastrados -->
+                    <div class="card">
+                        <div class="card-header-row card-header-between">
+                            <div class="card-header-row">
+                                <span class="card-section-icon">👥</span>
+                                <h3>Funcionários Cadastrados</h3>
+                            </div>
+                            <button id="employeesToggleBtn" class="secondary card-toggle-btn">Mostrar lista</button>
+                        </div>
+                        <div id="employeesListContainer" class="hidden">
+                            <div id="employeesList"></div>
+                            <div class="notifications-section">
+                                <h4>Enviar Notificação</h4>
+                                <div class="notification-form">
+                                    <div class="notif-form-grid">
+                                        <select id="notificationType">
+                                            <option value="general">Notificação Geral</option>
+                                            <option value="specific">Para Funcionário Específico</option>
+                                        </select>
+                                        <select id="notificationEmployee" class="hidden">
+                                            <option value="">Selecione um funcionário</option>
+                                        </select>
+                                    </div>
+                                    <textarea id="notificationMessage" placeholder="Digite a mensagem para os colaboradores..." rows="3"></textarea>
+                                    <button id="sendNotificationBtn" class="primary">Enviar Notificação</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Linha 4: Turnos -->
+                    <div class="card">
+                        <div class="card-header-row">
+                            <span class="card-section-icon">🕒</span>
+                            <h3>Turnos</h3>
+                        </div>
+                        <div class="shifts-overview" id="shiftsOverview">
+                            <div class="shift-overview-card">
+                                <div class="shift-card-top">
+                                    <span class="shift-card-emoji">🌙</span>
+                                    <div>
+                                        <h4>Madrugada</h4>
+                                        <p>Escala mensal completa</p>
+                                    </div>
+                                </div>
+                                <div class="shift-actions">
+                                    <button class="secondary" onclick="openShiftDetail('Madrugada')">Ver Escala</button>
+                                    <button class="secondary" onclick="generateMonthlyReport('Madrugada')">Relatório</button>
+                                </div>
+                            </div>
+                            <div class="shift-overview-card">
+                                <div class="shift-card-top">
+                                    <span class="shift-card-emoji">☀️</span>
+                                    <div>
+                                        <h4>Manhã</h4>
+                                        <p>Escala mensal completa</p>
+                                    </div>
+                                </div>
+                                <div class="shift-actions">
+                                    <button class="secondary" onclick="openShiftDetail('Manhã')">Ver Escala</button>
+                                    <button class="secondary" onclick="generateMonthlyReport('Manhã')">Relatório</button>
+                                </div>
+                            </div>
+                            <div class="shift-overview-card">
+                                <div class="shift-card-top">
+                                    <span class="shift-card-emoji">🌤️</span>
+                                    <div>
+                                        <h4>Tarde</h4>
+                                        <p>Escala mensal completa</p>
+                                    </div>
+                                </div>
+                                <div class="shift-actions">
+                                    <button class="secondary" onclick="openShiftDetail('Tarde')">Ver Escala</button>
+                                    <button class="secondary" onclick="generateMonthlyReport('Tarde')">Relatório</button>
+                                </div>
+                            </div>
+                            <div class="shift-overview-card">
+                                <div class="shift-card-top">
+                                    <span class="shift-card-emoji">🌃</span>
+                                    <div>
+                                        <h4>Noite</h4>
+                                        <p>Escala mensal completa</p>
+                                    </div>
+                                </div>
+                                <div class="shift-actions">
+                                    <button class="secondary" onclick="openShiftDetail('Noite')">Ver Escala</button>
+                                    <button class="secondary" onclick="generateMonthlyReport('Noite')">Relatório</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Linha 5: Detalhe do Turno (oculto inicialmente) -->
+                    <div class="card hidden" id="shiftDetailPanel">
+                        <div class="detail-header">
+                            <button id="closeShiftDetailBtn" class="secondary">← Voltar</button>
+                            <h3 id="shiftDetailTitle">Escala do Turno</h3>
+                        </div>
+                        <div class="schedule-calendar" id="shiftDetailCalendar"></div>
+                        <div class="detail-actions">
+                            <button id="saveFolgasBtn" class="primary">Salvar Folgas</button>
+                        </div>
+                    </div>
+
+                </div><!-- /dash-container -->
             </section>
 
-            <section id="adminPanel" class="panel hidden">
-                <h2>Gerenciamento de Turnos e Escalas</h2>
+            <!-- ── Painel Funcionário ── -->
+            <section id="employeePanel" class="hidden">
+                <div class="dash-container">
 
-                <div class="card">
-                    <h3>Período da Escala (Mês)</h3>
-                    <div class="period-nav">
-                        <button id="prevPeriodBtn" class="secondary">← Mês Anterior</button>
-                        <div>
-                            <label for="periodStartDate">Visualizar o mês a partir de:</label>
-                            <input id="periodStartDate" type="date">
-                        </div>
-                        <button id="nextPeriodBtn" class="secondary">Próximo Mês →</button>
-                    </div>
-                    <p id="periodDisplay" class="period-info">Carregando...</p>
-                </div>
-
-                <div class="card">
-                    <h3>Adicionar Novo Funcionário</h3>
-                    <label for="newEmpName">Nome:</label>
-                    <input id="newEmpName" type="text" placeholder="Nome completo do funcionário">
-                    
-                    <label for="newEmpUsername">Usuário:</label>
-                    <input id="newEmpUsername" type="text" placeholder="Nome de usuário (ex: joao.silva)">
-                    
-                    <label for="newEmpPassword">Senha:</label>
-                    <input id="newEmpPassword" type="password" placeholder="Digite uma senha segura">
-                    
-                    <label for="newEmpTurno">Turno:</label>
-                    <select id="newEmpTurno">
-                        <option value="">Selecione um turno</option>
-                        <option value="Madrugada">Madrugada</option>
-                        <option value="Manhã">Manhã</option>
-                        <option value="Tarde">Tarde</option>
-                        <option value="Noite">Noite</option>
-                    </select>
-                    
-                    <button id="addEmpBtn" class="primary">Adicionar Funcionário</button>
-                    
-                    <div id="newEmpResult" class="hidden" style="margin-top: 10px; padding: 10px; background: #f0f9ff; border: 1px solid #0ea5e9; border-radius: 6px;">
-                        <strong>Funcionário criado com sucesso!</strong><br>
-                        <span id="newEmpCredentials"></span>
-                    </div>
-                </div>
-
-                <div class="card">
-                    <h3>Funcionários Cadastrados</h3>
-                    <button id="employeesToggleBtn" class="secondary">Mostrar funcionários cadastrados</button>
-                    <div id="employeesListContainer" class="hidden">
-                        <div id="employeesList"></div>
-                        
-                        <div class="notifications-section">
-                            <h4>Notificações</h4>
-                            <div class="notification-form">
-                                <select id="notificationType">
-                                    <option value="general">Notificação Geral</option>
-                                    <option value="specific">Para Funcionário Específico</option>
-                                </select>
-                                <select id="notificationEmployee" class="hidden">
-                                    <option value="">Selecione um funcionário</option>
-                                </select>
-                                <textarea id="notificationMessage" placeholder="Digite a mensagem..." rows="3"></textarea>
-                                <button id="sendNotificationBtn" class="primary">Enviar Notificação</button>
-                            </div>
+                    <div class="employee-info-card">
+                        <div class="employee-info-avatar" id="employeeInfoAvatar">?</div>
+                        <div class="employee-info-details">
+                            <span id="employeeName" class="employee-info-name">-</span>
+                            <span id="employeeShift" class="shift-badge-pill">-</span>
                         </div>
                     </div>
-                </div>
 
-                <div class="card">
-                    <h3>Relatórios</h3>
-                    <div class="reports-section">
-                        <button id="generateReportBtn" class="primary">Gerar Relatório Mensal</button>
-                        <div id="reportsContainer" class="hidden"></div>
-                    </div>
-                </div>
-
-                <div class="card">
-                    <h3>Turnos</h3>
-                    <div class="shifts-overview" id="shiftsOverview">
-                        <div class="shift-overview-card">
+                    <div class="card">
+                        <div class="card-header-row">
+                            <span class="card-section-icon">📅</span>
+                            <h3>Período da Escala</h3>
+                        </div>
+                        <div class="period-nav">
+                            <button id="empPrevPeriodBtn" class="secondary">← Anterior</button>
                             <div>
-                                <h4>🌙 Madrugada</h4>
-                                <p>Ver escala mensal completa.</p>
+                                <label for="empPeriodStartDate">Visualizar a partir de:</label>
+                                <input id="empPeriodStartDate" type="date">
                             </div>
-                            <div class="shift-actions">
-                                <button class="secondary" onclick="openShiftDetail('Madrugada')">Ver Escala</button>
-                                <button class="secondary" onclick="generateMonthlyReport('Madrugada')">Relatório</button>
-                            </div>
+                            <button id="empNextPeriodBtn" class="secondary">Próximo →</button>
                         </div>
+                        <p id="empPeriodDisplay" class="period-info">Carregando...</p>
+                    </div>
 
-                        <div class="shift-overview-card">
-                            <div>
-                                <h4>☀️ Manhã</h4>
-                                <p>Ver escala mensal completa.</p>
-                            </div>
-                            <div class="shift-actions">
-                                <button class="secondary" onclick="openShiftDetail('Manhã')">Ver Escala</button>
-                                <button class="secondary" onclick="generateMonthlyReport('Manhã')">Relatório</button>
-                            </div>
+                    <div class="card">
+                        <div class="card-header-row">
+                            <span class="card-section-icon">📆</span>
+                            <h3>Escala do mês selecionado</h3>
                         </div>
+                        <div class="employee-calendar" id="employeeCalendar"></div>
+                    </div>
 
-                        <div class="shift-overview-card">
-                            <div>
-                                <h4>🌤️ Tarde</h4>
-                                <p>Ver escala mensal completa.</p>
-                            </div>
-                            <div class="shift-actions">
-                                <button class="secondary" onclick="openShiftDetail('Tarde')">Ver Escala</button>
-                                <button class="secondary" onclick="generateMonthlyReport('Tarde')">Relatório</button>
-                            </div>
+                    <div class="card">
+                        <div class="card-header-row">
+                            <span class="card-section-icon">🔔</span>
+                            <h3>Minhas Notificações</h3>
                         </div>
-
-                        <div class="shift-overview-card">
-                            <div>
-                                <h4>🌃 Noite</h4>
-                                <p>Ver escala mensal completa.</p>
-                            </div>
-                            <div class="shift-actions">
-                                <button class="secondary" onclick="openShiftDetail('Noite')">Ver Escala</button>
-                                <button class="secondary" onclick="generateMonthlyReport('Noite')">Relatório</button>
-                            </div>
-                        </div>
+                        <div id="employeeNotificationsList"></div>
                     </div>
-                </div>
 
-                <div class="card hidden" id="shiftDetailPanel">
-                    <div class="detail-header">
-                        <button id="closeShiftDetailBtn" class="secondary">← Voltar</button>
-                        <h3 id="shiftDetailTitle">Escala do Turno</h3>
-                    </div>
-                    <div class="schedule-calendar" id="shiftDetailCalendar"></div>
-                    <div class="detail-actions">
-                        <button id="saveFolgasBtn" class="primary">Salvar Folgas</button>
-                    </div>
-                </div>
-            </section>
-
-            <section id="employeePanel" class="panel hidden">
-                <h2>Meu Calendário de Escala</h2>
-                <div class="employee-info-card">
-                    <div class="employee-info-avatar" id="employeeInfoAvatar">?</div>
-                    <div class="employee-info-details">
-                        <span id="employeeName" class="employee-info-name">-</span>
-                        <span id="employeeShift" class="shift-badge-pill">-</span>
-                    </div>
-                </div>
-
-                <div class="card">
-                    <h3>Período da Escala</h3>
-                    <div class="period-nav">
-                        <button id="empPrevPeriodBtn" class="secondary">← Anterior</button>
-                        <div>
-                            <label for="empPeriodStartDate">Visualizar a partir de:</label>
-                            <input id="empPeriodStartDate" type="date">
-                        </div>
-                        <button id="empNextPeriodBtn" class="secondary">Próximo →</button>
-                    </div>
-                    <p id="empPeriodDisplay" class="period-info">Carregando...</p>
-                </div>
-                
-                <div class="card">
-                    <h3>Escala do mês selecionado</h3>
-                    <div class="employee-calendar" id="employeeCalendar"></div>
-                </div>
-
-                <div class="card">
-                    <h3>Minhas Notificações</h3>
-                    <div id="employeeNotificationsList"></div>
-                </div>
+                </div><!-- /dash-container -->
             </section>
         </section>
     </main>
+
+    <!-- Botão voltar ao topo -->
+    <button id="backToTopBtn" class="back-to-top" aria-label="Voltar ao topo" title="Voltar ao topo">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+            <polyline points="18 15 12 9 6 15"/>
+        </svg>
+    </button>
 
     <!-- Toast Container -->
     <div id="toastContainer"></div>

@@ -722,6 +722,11 @@ function handleRoleView() {
 
   adminPanel.classList.toggle('hidden', !isAdmin);
   employeePanel.classList.toggle('hidden', isAdmin);
+
+  const pageTitle = document.getElementById('topbarPageTitle');
+  if (pageTitle) {
+    pageTitle.textContent = isAdmin ? 'Gerenciamento de Escalas' : 'Meu Calendário de Escala';
+  }
 }
 
 function renderEmployeesList() {
@@ -971,4 +976,17 @@ generateReportBtn.addEventListener('click', generateMonthlyReport);
 // Enter key submits login
 [usernameInput, passwordInput].forEach(el => {
   el.addEventListener('keydown', e => { if (e.key === 'Enter') login(); });
+});
+
+// ── Botão voltar ao topo ──
+const backToTopBtn = document.getElementById('backToTopBtn');
+window.addEventListener('scroll', () => {
+  if (window.scrollY > 300) {
+    backToTopBtn.classList.add('visible');
+  } else {
+    backToTopBtn.classList.remove('visible');
+  }
+}, { passive: true });
+backToTopBtn.addEventListener('click', () => {
+  window.scrollTo({ top: 0, behavior: 'smooth' });
 });
