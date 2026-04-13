@@ -242,9 +242,11 @@
     </div>
 
     <script src="treino.js"></script>
-    <script>
+   <script>
 if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('/sw.js');
+  navigator.serviceWorker.register('/service-worker.js')
+    .then(() => console.log('SW registrado'))
+    .catch(err => console.log('Erro SW', err));
 }
 </script>
 </body>
