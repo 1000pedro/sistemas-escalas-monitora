@@ -1442,3 +1442,520 @@ h2::before {
   .user-info-group { gap: 8px; }
   .user-avatar { width: 32px; height: 32px; font-size: 12px; }
 }
+
+/* ══════════════════════════════════════════════════════════════
+   LOGIN — REDESIGN PREMIUM (SaaS-grade dark UI)
+   Substitui completamente o estilo anterior do #loginPanel
+══════════════════════════════════════════════════════════════ */
+
+/* ── Overlay full-screen ── */
+#loginPanel {
+  position: fixed !important;
+  inset: 0 !important;
+  max-width: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: none !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  background: #060a14 !important;
+  z-index: 999;
+  overflow: hidden !important;
+  animation: lp-fade-in 0.35s ease;
+}
+
+@keyframes lp-fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* ── Wrapper: duas colunas ── */
+.lp-wrapper {
+  display: flex;
+  height: 100vh;
+  width: 100vw;
+}
+
+/* ════════════════════════
+   COLUNA ESQUERDA — Branding
+════════════════════════ */
+.lp-left {
+  flex: 1 1 55%;
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(150deg, #070b18 0%, #0c1428 45%, #0e1a35 100%);
+  display: flex;
+  align-items: center;
+  padding: 60px 56px;
+}
+
+/* Grade sutil de fundo */
+.lp-left::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(99,102,241,0.055) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(99,102,241,0.055) 1px, transparent 1px);
+  background-size: 50px 50px;
+  mask-image: radial-gradient(ellipse 85% 85% at 45% 50%, black 30%, transparent 100%);
+  pointer-events: none;
+}
+
+/* Orbs de glow */
+.lp-orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(90px);
+  pointer-events: none;
+}
+.lp-orb-1 {
+  width: 520px; height: 520px;
+  background: radial-gradient(circle, rgba(99,102,241,0.16) 0%, transparent 70%);
+  top: -120px; left: -100px;
+}
+.lp-orb-2 {
+  width: 420px; height: 420px;
+  background: radial-gradient(circle, rgba(139,92,246,0.13) 0%, transparent 70%);
+  bottom: -100px; right: 20px;
+}
+.lp-orb-3 {
+  width: 280px; height: 280px;
+  background: radial-gradient(circle, rgba(59,130,246,0.1) 0%, transparent 70%);
+  top: 38%; left: 42%;
+}
+
+/* Conteúdo de branding */
+.lp-brand-content {
+  position: relative;
+  z-index: 1;
+  max-width: 480px;
+  animation: lp-slide-up 0.55s cubic-bezier(0.22,1,0.36,1);
+}
+
+@keyframes lp-slide-up {
+  from { opacity: 0; transform: translateY(22px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.lp-brand-logo-row {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  margin-bottom: 40px;
+}
+
+/* Logo da marca no lado esquerdo */
+.lp-brand-img {
+  width: 42px;
+  height: 42px;
+  object-fit: contain;
+  border-radius: 12px;
+  flex-shrink: 0;
+}
+
+.lp-brand-name-group {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.lp-brand-company {
+  font-size: 15px;
+  font-weight: 700;
+  color: rgba(255,255,255,0.85);
+  letter-spacing: 0.5px;
+}
+
+.lp-brand-divider {
+  color: rgba(255,255,255,0.25);
+  font-size: 14px;
+}
+
+.lp-brand-product {
+  font-size: 13px;
+  font-weight: 500;
+  color: rgba(255,255,255,0.45);
+  letter-spacing: 0.1px;
+}
+
+/* Título principal */
+.lp-headline {
+  font-size: 42px;
+  font-weight: 700;
+  line-height: 1.14;
+  color: #f1f5f9;
+  letter-spacing: -1.2px;
+  margin-bottom: 18px;
+  padding-left: 0 !important;
+}
+.lp-headline::before { display: none !important; }
+
+.lp-headline-accent {
+  background: linear-gradient(125deg, #818cf8 0%, #a78bfa 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.lp-sub {
+  font-size: 15px;
+  color: rgba(255,255,255,0.42);
+  line-height: 1.7;
+  margin-bottom: 40px;
+  max-width: 370px;
+}
+
+/* ── Mock dashboard preview ── */
+.lp-mock-dashboard {
+  background: rgba(255,255,255,0.038);
+  border: 1px solid rgba(255,255,255,0.075);
+  border-radius: 14px;
+  overflow: hidden;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.lp-mock-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 11px 16px;
+  border-bottom: 1px solid rgba(255,255,255,0.055);
+  background: rgba(255,255,255,0.025);
+}
+
+.lp-mock-dots { display: flex; gap: 5px; }
+.lp-mock-dot  { width: 9px; height: 9px; border-radius: 50%; }
+.lp-dot-r { background: rgba(239,68,68,0.55); }
+.lp-dot-y { background: rgba(234,179,8,0.55); }
+.lp-dot-g { background: rgba(34,197,94,0.45); }
+
+.lp-mock-title {
+  font-size: 11.5px;
+  color: rgba(255,255,255,0.32);
+  font-weight: 500;
+  letter-spacing: 0.1px;
+}
+
+.lp-mock-body {
+  padding: 14px 16px;
+  display: grid;
+  gap: 10px;
+}
+
+.lp-mock-row {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+}
+
+.lp-mock-shift {
+  font-size: 10.5px;
+  font-weight: 600;
+  width: 88px;
+  padding: 3px 8px;
+  border-radius: 5px;
+  text-align: center;
+  flex-shrink: 0;
+  letter-spacing: 0.1px;
+}
+.lp-shift-night     { background: rgba(99,102,241,0.14); color: #a5b4fc; }
+.lp-shift-morning   { background: rgba(251,191,36,0.12); color: #fcd34d; }
+.lp-shift-afternoon { background: rgba(20,184,166,0.12); color: #5eead4; }
+.lp-shift-evening   { background: rgba(139,92,246,0.14); color: #c4b5fd; }
+
+.lp-mock-bar {
+  flex: 1;
+  height: 5px;
+  background: rgba(255,255,255,0.07);
+  border-radius: 99px;
+  overflow: hidden;
+}
+
+.lp-mock-fill         { height: 100%; border-radius: 99px; background: linear-gradient(90deg, #6366f1, #818cf8); }
+.lp-fill-amber        { background: linear-gradient(90deg, #d97706, #fbbf24); }
+.lp-fill-teal         { background: linear-gradient(90deg, #0d9488, #5eead4); }
+.lp-fill-purple       { background: linear-gradient(90deg, #7c3aed, #c4b5fd); }
+
+.lp-mock-count {
+  font-size: 11px;
+  color: rgba(255,255,255,0.3);
+  width: 14px;
+  text-align: right;
+}
+
+.lp-mock-stats {
+  display: flex;
+  border-top: 1px solid rgba(255,255,255,0.055);
+  padding: 12px 16px;
+}
+
+.lp-mock-stat {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+}
+.lp-mock-stat + .lp-mock-stat {
+  border-left: 1px solid rgba(255,255,255,0.055);
+}
+
+.lp-mock-stat-val {
+  font-size: 17px;
+  font-weight: 700;
+  color: #f1f5f9;
+  letter-spacing: -0.3px;
+}
+.lp-mock-stat-lbl {
+  font-size: 9.5px;
+  color: rgba(255,255,255,0.32);
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+}
+
+/* ════════════════════════
+   COLUNA DIREITA — Formulário
+════════════════════════ */
+.lp-right {
+  flex: 0 0 45%;
+  background: #080c18;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 32px;
+  border-left: 1px solid rgba(255,255,255,0.05);
+}
+
+/* Card do formulário */
+.lp-form-card {
+  width: 100%;
+  max-width: 380px;
+  animation: lp-slide-right 0.5s cubic-bezier(0.22,1,0.36,1) 0.08s both;
+}
+
+@keyframes lp-slide-right {
+  from { opacity: 0; transform: translateX(18px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+/* Ícone de marca */
+.lp-form-brand { margin-bottom: 24px; }
+
+.lp-form-logo-img {
+  width: 52px;
+  height: 52px;
+  object-fit: contain;
+  border-radius: 14px;
+  display: block;
+}
+
+/* Título e descrição do form */
+.lp-form-title {
+  font-size: 24px !important;
+  font-weight: 700 !important;
+  color: #f1f5f9 !important;
+  letter-spacing: -0.5px !important;
+  margin-bottom: 6px !important;
+  padding-left: 0 !important;
+}
+.lp-form-title::before { display: none !important; }
+
+.lp-form-desc {
+  font-size: 14px;
+  color: rgba(255,255,255,0.38);
+  margin-bottom: 28px;
+  line-height: 1.5;
+}
+
+/* ── Campos ── */
+#loginPanel .login-form {
+  display: grid !important;
+  gap: 18px !important;
+  padding: 0 !important;
+  background: transparent !important;
+}
+
+.lp-field-group {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.lp-label {
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  color: rgba(255,255,255,0.6) !important;
+  display: block;
+  letter-spacing: 0.05px;
+}
+
+.lp-label-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.lp-forgot-link {
+  font-size: 12px;
+  color: #818cf8;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+.lp-forgot-link:hover { color: #a5b4fc; }
+
+/* Input com ícone */
+.lp-input-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.lp-input-icon {
+  position: absolute;
+  left: 14px;
+  width: 15px; height: 15px;
+  color: rgba(255,255,255,0.28);
+  pointer-events: none;
+  transition: color 0.2s;
+  flex-shrink: 0;
+}
+
+/* Estilos do input — override completo */
+#loginPanel #usernameInput,
+#loginPanel #passwordInput,
+.lp-input {
+  width: 100% !important;
+  padding: 12px 14px 12px 42px !important;
+  background: rgba(255,255,255,0.05) !important;
+  border: 1px solid rgba(255,255,255,0.09) !important;
+  border-radius: 10px !important;
+  color: #f1f5f9 !important;
+  font-size: 14px !important;
+  font-family: 'Inter', 'Segoe UI', sans-serif !important;
+  line-height: 1.5 !important;
+  transition: border-color 0.2s, box-shadow 0.2s, background 0.2s !important;
+  outline: none !important;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+#loginPanel #usernameInput::placeholder,
+#loginPanel #passwordInput::placeholder,
+.lp-input::placeholder {
+  color: rgba(255,255,255,0.22) !important;
+}
+
+#loginPanel #usernameInput:hover,
+#loginPanel #passwordInput:hover,
+.lp-input:hover {
+  background: rgba(255,255,255,0.07) !important;
+  border-color: rgba(255,255,255,0.14) !important;
+}
+
+#loginPanel #usernameInput:focus,
+#loginPanel #passwordInput:focus,
+.lp-input:focus {
+  background: rgba(99,102,241,0.09) !important;
+  border-color: rgba(99,102,241,0.55) !important;
+  box-shadow: 0 0 0 3px rgba(99,102,241,0.14) !important;
+}
+
+/* Ícone acende no focus */
+.lp-input-wrap:focus-within .lp-input-icon {
+  color: #818cf8;
+}
+
+/* ── Botão de login ── */
+#loginPanel #loginBtn,
+.lp-login-btn {
+  width: 100% !important;
+  padding: 13px 20px !important;
+  background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%) !important;
+  color: #fff !important;
+  border: none !important;
+  border-radius: 10px !important;
+  font-size: 15px !important;
+  font-weight: 600 !important;
+  font-family: 'Inter', 'Segoe UI', sans-serif !important;
+  cursor: pointer !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 8px !important;
+  transition: background 0.2s, box-shadow 0.2s, transform 0.15s !important;
+  box-shadow: 0 4px 18px rgba(99,102,241,0.4) !important;
+  margin-top: 4px !important;
+  letter-spacing: 0.1px !important;
+}
+
+#loginPanel #loginBtn:hover,
+.lp-login-btn:hover {
+  background: linear-gradient(135deg, #818cf8 0%, #6366f1 100%) !important;
+  box-shadow: 0 6px 26px rgba(99,102,241,0.55) !important;
+  transform: translateY(-1px) !important;
+}
+
+#loginPanel #loginBtn:active,
+.lp-login-btn:active {
+  transform: translateY(0) !important;
+  box-shadow: 0 2px 10px rgba(99,102,241,0.35) !important;
+}
+
+#loginPanel #loginBtn:disabled,
+.lp-login-btn:disabled {
+  opacity: 0.6 !important;
+  cursor: not-allowed !important;
+  transform: none !important;
+}
+
+#loginPanel #loginBtn.btn-loading,
+.lp-login-btn.btn-loading {
+  opacity: 0.75 !important;
+}
+
+/* Seta do botão anima no hover */
+.lp-btn-arrow {
+  width: 15px; height: 15px;
+  transition: transform 0.2s;
+  flex-shrink: 0;
+}
+#loginPanel #loginBtn:hover .lp-btn-arrow {
+  transform: translateX(3px);
+}
+
+/* ── Rodapé do card ── */
+.lp-bottom-label {
+  text-align: center;
+  font-size: 11.5px;
+  color: rgba(255,255,255,0.18);
+  margin-top: 28px;
+  padding-top: 20px;
+  border-top: 1px solid rgba(255,255,255,0.055);
+  letter-spacing: 0.1px;
+}
+
+/* ── Labels dentro do loginPanel (override global) ── */
+#loginPanel label {
+  color: rgba(255,255,255,0.6) !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+}
+
+/* ══════════════════════════════════════════
+   RESPONSIVE — Mobile: esconde lado esquerdo
+══════════════════════════════════════════ */
+@media (max-width: 768px) {
+  .lp-left  { display: none !important; }
+  .lp-right {
+    flex: 1;
+    border-left: none;
+    padding: 32px 24px;
+  }
+  .lp-form-card { max-width: 100%; }
+}
+
+@media (max-width: 400px) {
+  .lp-right { padding: 24px 16px; }
+}

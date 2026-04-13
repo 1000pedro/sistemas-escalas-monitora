@@ -24,22 +24,135 @@
 
     <main>
         <section id="loginPanel" class="panel">
-            <div class="login-brand">
-                <div class="login-logo" aria-hidden="true">📋</div>
-                <h2>Bem-vindo</h2>
-                <p class="login-company">Monitora Piracicaba · Sistema de Escalas</p>
-            </div>
-            <div class="login-form">
-                <div>
-                    <label for="usernameInput">Usuário</label>
-                    <input id="usernameInput" type="text" placeholder="Digite seu usuário" autocomplete="username">
+          <div class="lp-wrapper">
+
+            <!-- ── Esquerda: Branding ── -->
+            <div class="lp-left">
+              <div class="lp-orb lp-orb-1"></div>
+              <div class="lp-orb lp-orb-2"></div>
+              <div class="lp-orb lp-orb-3"></div>
+
+              <div class="lp-brand-content">
+                <div class="lp-brand-logo-row">
+                  <img src="icon-192.png" alt="CIIP" class="lp-brand-img">
+                  <div class="lp-brand-name-group">
+                    <span class="lp-brand-company">CIIP</span>
+                    <span class="lp-brand-divider">·</span>
+                    <span class="lp-brand-product">Sistema de Escalas</span>
+                  </div>
                 </div>
-                <div>
-                    <label for="passwordInput">Senha</label>
-                    <input id="passwordInput" type="password" placeholder="Digite sua senha" autocomplete="current-password">
+
+                <h1 class="lp-headline">
+                  Controle de turnos<br>e escalas
+                  <span class="lp-headline-accent"> interno.</span>
+                </h1>
+                <p class="lp-sub">Painel exclusivo para colaboradores da CIIP. Visualize sua escala, folgas e turnos do mês.</p>
+
+                <!-- Mock dashboard preview -->
+                <div class="lp-mock-dashboard" aria-hidden="true">
+                  <div class="lp-mock-header">
+                    <div class="lp-mock-dots">
+                      <span class="lp-mock-dot lp-dot-r"></span>
+                      <span class="lp-mock-dot lp-dot-y"></span>
+                      <span class="lp-mock-dot lp-dot-g"></span>
+                    </div>
+                    <span class="lp-mock-title">CIIP · Painel de Turnos</span>
+                  </div>
+                  <div class="lp-mock-body">
+                    <div class="lp-mock-row">
+                      <span class="lp-mock-shift lp-shift-night">Madrugada</span>
+                      <div class="lp-mock-bar"><div class="lp-mock-fill" style="width:80%"></div></div>
+                      <span class="lp-mock-count">8</span>
+                    </div>
+                    <div class="lp-mock-row">
+                      <span class="lp-mock-shift lp-shift-morning">Manhã</span>
+                      <div class="lp-mock-bar"><div class="lp-mock-fill lp-fill-amber" style="width:65%"></div></div>
+                      <span class="lp-mock-count">7</span>
+                    </div>
+                    <div class="lp-mock-row">
+                      <span class="lp-mock-shift lp-shift-afternoon">Tarde</span>
+                      <div class="lp-mock-bar"><div class="lp-mock-fill lp-fill-teal" style="width:72%"></div></div>
+                      <span class="lp-mock-count">6</span>
+                    </div>
+                    <div class="lp-mock-row">
+                      <span class="lp-mock-shift lp-shift-evening">Noite</span>
+                      <div class="lp-mock-bar"><div class="lp-mock-fill lp-fill-purple" style="width:55%"></div></div>
+                      <span class="lp-mock-count">5</span>
+                    </div>
+                  </div>
+                  <div class="lp-mock-stats">
+                    <div class="lp-mock-stat">
+                      <span class="lp-mock-stat-val">26</span>
+                      <span class="lp-mock-stat-lbl">Funcionários</span>
+                    </div>
+                    <div class="lp-mock-stat">
+                      <span class="lp-mock-stat-val">4</span>
+                      <span class="lp-mock-stat-lbl">Turnos</span>
+                    </div>
+                    <div class="lp-mock-stat">
+                      <span class="lp-mock-stat-val">24/7</span>
+                      <span class="lp-mock-stat-lbl">Online</span>
+                    </div>
+                  </div>
                 </div>
-                <button id="loginBtn" class="primary">Entrar</button>
+              </div>
             </div>
+
+            <!-- ── Direita: Formulário ── -->
+            <div class="lp-right">
+              <div class="lp-form-card">
+
+                <div class="lp-form-brand">
+                  <img src="icon-192.png" alt="CIIP" class="lp-form-logo-img">
+                </div>
+
+                <div class="lp-form-title-group">
+                  <h2 class="lp-form-title">Bem-vindo</h2>
+                  <p class="lp-form-desc">Acesso restrito a colaboradores da CIIP</p>
+                </div>
+
+                <div class="login-form">
+                  <!-- Campo: Usuário -->
+                  <div class="lp-field-group">
+                    <label for="usernameInput" class="lp-label">Usuário</label>
+                    <div class="lp-input-wrap">
+                      <svg class="lp-input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                        <circle cx="12" cy="7" r="4"/>
+                      </svg>
+                      <input id="usernameInput" type="text" class="lp-input" placeholder="Seu nome de usuário" autocomplete="username">
+                    </div>
+                  </div>
+
+                  <!-- Campo: Senha -->
+                  <div class="lp-field-group">
+                    <div class="lp-label-row">
+                      <label for="passwordInput" class="lp-label">Senha</label>
+                      <a href="#" class="lp-forgot-link" onclick="return false;">Esqueci minha senha</a>
+                    </div>
+                    <div class="lp-input-wrap">
+                      <svg class="lp-input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                        <rect x="3" y="11" width="18" height="11" rx="2"/>
+                        <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                      </svg>
+                      <input id="passwordInput" type="password" class="lp-input" placeholder="••••••••" autocomplete="current-password">
+                    </div>
+                  </div>
+
+                  <!-- Botão de login -->
+                  <button id="loginBtn" class="primary lp-login-btn">
+                    <span class="lp-btn-text">Entrar</span>
+                    <svg class="lp-btn-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+                      <path d="M5 12h14M12 5l7 7-7 7"/>
+                    </svg>
+                  </button>
+                </div>
+
+                <p class="lp-bottom-label">CIIP · Sistema de Escalas Interno</p>
+              </div>
+            </div>
+
+          </div>
         </section>
 
         <section id="appPanel" class="hidden">
