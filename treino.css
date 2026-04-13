@@ -1444,6 +1444,459 @@ h2::before {
 }
 
 /* ══════════════════════════════════════════════════════════════
+   DARK THEME — SISTEMA COMPLETO CIIP
+   Aplicado sobre todo o #appPanel (admin + funcionário)
+══════════════════════════════════════════════════════════════ */
+
+/* ── Variáveis dark ── */
+body {
+  background: #070b18 !important;
+  background-attachment: fixed !important;
+  color: #e2e8f0 !important;
+}
+
+/* ── Header dark ── */
+header {
+  background: #080c18 !important;
+  box-shadow: none !important;
+  border-bottom: 1px solid rgba(255,255,255,0.06) !important;
+  height: 60px !important;
+}
+
+.header-ciip-logo {
+  width: 34px;
+  height: 34px;
+  object-fit: contain;
+  border-radius: 9px;
+  flex-shrink: 0;
+}
+
+.header-text h1 {
+  color: #f1f5f9 !important;
+  font-size: 16px !important;
+  letter-spacing: -0.2px !important;
+}
+
+.header-sub {
+  color: rgba(255,255,255,0.4) !important;
+  font-size: 10px !important;
+  text-transform: uppercase !important;
+  letter-spacing: 1.2px !important;
+  opacity: 1 !important;
+}
+
+/* ── Panels dark ── */
+.panel {
+  background: #0d1117 !important;
+  border: 1px solid rgba(255,255,255,0.07) !important;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.4), 0 8px 24px rgba(0,0,0,0.2) !important;
+}
+
+/* ── Cards dark ── */
+.card {
+  background: rgba(255,255,255,0.03) !important;
+  border: 1px solid rgba(255,255,255,0.07) !important;
+}
+
+/* ── Headings ── */
+h2 {
+  color: #f1f5f9 !important;
+}
+h2::before {
+  background: linear-gradient(180deg, #6366f1, #818cf8) !important;
+}
+h3 {
+  color: #94a3b8 !important;
+}
+h4 {
+  color: #cbd5e1 !important;
+}
+
+/* ── Labels ── */
+label {
+  color: rgba(255,255,255,0.55) !important;
+}
+
+/* ── Inputs / Selects / Textareas dark ── */
+select,
+input[type="date"],
+input[type="text"],
+input[type="password"],
+textarea {
+  background: rgba(255,255,255,0.05) !important;
+  border: 1px solid rgba(255,255,255,0.1) !important;
+  border-radius: 8px !important;
+  color: #f1f5f9 !important;
+  padding: 10px 13px !important;
+}
+select:hover,
+input[type="date"]:hover,
+input[type="text"]:hover,
+input[type="password"]:hover,
+textarea:hover {
+  background: rgba(255,255,255,0.07) !important;
+  border-color: rgba(255,255,255,0.15) !important;
+}
+select:focus,
+input[type="date"]:focus,
+input[type="text"]:focus,
+input[type="password"]:focus,
+textarea:focus {
+  background: rgba(99,102,241,0.08) !important;
+  border-color: rgba(99,102,241,0.55) !important;
+  box-shadow: 0 0 0 3px rgba(99,102,241,0.14) !important;
+}
+select option {
+  background: #111827;
+  color: #f1f5f9;
+}
+textarea::placeholder,
+input::placeholder {
+  color: rgba(255,255,255,0.22) !important;
+}
+
+/* ── Botão primary (indigo) ── */
+.primary {
+  background: linear-gradient(135deg, #6366f1, #4f46e5) !important;
+  color: #fff !important;
+  box-shadow: 0 2px 12px rgba(99,102,241,0.35) !important;
+  border: none !important;
+}
+.primary:hover {
+  background: linear-gradient(135deg, #818cf8, #6366f1) !important;
+  box-shadow: 0 4px 18px rgba(99,102,241,0.5) !important;
+  transform: translateY(-1px) !important;
+}
+.primary:active  { transform: translateY(0) !important; }
+.primary:disabled { opacity: 0.5 !important; transform: none !important; box-shadow: none !important; }
+
+/* ── Botão secondary (dark glass) ── */
+.secondary {
+  background: rgba(255,255,255,0.06) !important;
+  color: #cbd5e1 !important;
+  border: 1px solid rgba(255,255,255,0.1) !important;
+}
+.secondary:hover {
+  background: rgba(255,255,255,0.1) !important;
+  color: #f1f5f9 !important;
+  transform: translateY(-1px) !important;
+}
+.secondary:active { transform: translateY(0) !important; }
+
+/* ── Botão danger / remove ── */
+.btn-remove,
+.btn-danger {
+  background: rgba(239,68,68,0.15) !important;
+  color: #fca5a5 !important;
+  border: 1px solid rgba(239,68,68,0.25) !important;
+  box-shadow: none !important;
+}
+.btn-remove:hover,
+.btn-danger:hover {
+  background: rgba(239,68,68,0.25) !important;
+  color: #fecaca !important;
+  box-shadow: 0 2px 10px rgba(239,68,68,0.2) !important;
+  transform: translateY(-1px) !important;
+}
+
+/* ── User header bar ── */
+.user-header {
+  background: rgba(255,255,255,0.03) !important;
+  border: 1px solid rgba(255,255,255,0.07) !important;
+  backdrop-filter: blur(8px) !important;
+}
+
+.user-name { color: #f1f5f9 !important; }
+
+/* ── User avatar ── */
+.user-avatar {
+  background: linear-gradient(135deg, #6366f1, #4f46e5) !important;
+  color: white !important;
+  border: 2px solid rgba(99,102,241,0.3) !important;
+}
+
+/* ── Role / shift badges ── */
+.user-role-badge,
+.shift-badge-pill {
+  background: rgba(99,102,241,0.15) !important;
+  color: #a5b4fc !important;
+  border: 1px solid rgba(99,102,241,0.25) !important;
+}
+
+/* ── Period info ── */
+.period-info {
+  background: rgba(99,102,241,0.1) !important;
+  border: 1px solid rgba(99,102,241,0.2) !important;
+  color: #a5b4fc !important;
+}
+
+/* ── Shifts overview cards ── */
+.shift-overview-card {
+  background: rgba(255,255,255,0.03) !important;
+  border: 1px solid rgba(255,255,255,0.08) !important;
+  transition: background 0.2s, box-shadow 0.2s, transform 0.2s !important;
+}
+.shift-overview-card:hover {
+  background: rgba(255,255,255,0.055) !important;
+  border-color: rgba(99,102,241,0.3) !important;
+  box-shadow: 0 4px 20px rgba(99,102,241,0.15) !important;
+  transform: translateY(-2px) !important;
+}
+.shift-overview-card h4 { color: #f1f5f9 !important; }
+.shift-overview-card p  { color: rgba(255,255,255,0.4) !important; }
+
+/* ── Employee list items ── */
+.employee-item {
+  background: rgba(255,255,255,0.03) !important;
+  border: 1px solid rgba(255,255,255,0.07) !important;
+}
+.employee-item:hover { background: rgba(255,255,255,0.055) !important; box-shadow: none !important; }
+.employee-item strong { color: #f1f5f9 !important; }
+
+.employee-status.active   { background: rgba(16,185,129,0.15) !important; color: #6ee7b7 !important; border: 1px solid rgba(16,185,129,0.2) !important; }
+.employee-status.vacation { background: rgba(245,158,11,0.12) !important; color: #fcd34d !important; border: 1px solid rgba(245,158,11,0.2) !important; }
+.employee-status.inactive { background: rgba(239,68,68,0.12)  !important; color: #fca5a5 !important; border: 1px solid rgba(239,68,68,0.2)  !important; }
+
+/* ── Calendar table (admin) ── */
+.schedule-calendar {
+  background: #0d1117 !important;
+  border: 1px solid rgba(255,255,255,0.07) !important;
+}
+
+.calendar-table th {
+  background: rgba(255,255,255,0.04) !important;
+  border-right: 1px solid rgba(255,255,255,0.07) !important;
+  border-bottom: 1px solid rgba(255,255,255,0.1) !important;
+  color: rgba(255,255,255,0.5) !important;
+}
+.calendar-table td {
+  border-right: 1px solid rgba(255,255,255,0.05) !important;
+  border-bottom: 1px solid rgba(255,255,255,0.05) !important;
+  color: #e2e8f0 !important;
+}
+.calendar-table tbody tr:hover td {
+  background: rgba(99,102,241,0.07) !important;
+}
+.calendar-table tbody tr:hover td.col-name,
+.calendar-table tbody tr:hover td.col-total {
+  background: rgba(255,255,255,0.04) !important;
+}
+
+.calendar-table .col-name {
+  background: #0d1117 !important;
+  border-right: 1px solid rgba(255,255,255,0.1) !important;
+  color: #f1f5f9 !important;
+  box-shadow: 2px 0 8px rgba(0,0,0,0.3) !important;
+}
+.calendar-table thead .col-name {
+  background: rgba(255,255,255,0.04) !important;
+  color: rgba(255,255,255,0.5) !important;
+}
+
+.calendar-table .col-total {
+  background: rgba(255,255,255,0.03) !important;
+  border-left: 1px solid rgba(255,255,255,0.1) !important;
+  box-shadow: -2px 0 8px rgba(0,0,0,0.3) !important;
+}
+.calendar-table thead .col-total {
+  background: rgba(255,255,255,0.04) !important;
+}
+
+.calendar-table th.col-weekend {
+  background: rgba(245,158,11,0.08) !important;
+  color: #fcd34d !important;
+}
+.calendar-table td.col-weekend {
+  background: rgba(245,158,11,0.04) !important;
+}
+.calendar-table tbody tr:hover td.col-weekend {
+  background: rgba(245,158,11,0.1) !important;
+}
+
+.calendar-table th.col-today {
+  background: rgba(99,102,241,0.15) !important;
+  color: #a5b4fc !important;
+}
+.calendar-table td.col-today {
+  background: rgba(99,102,241,0.06) !important;
+  box-shadow: inset 0 0 0 1px rgba(99,102,241,0.25) !important;
+}
+
+.total-working { color: #6ee7b7 !important; }
+.total-sep     { color: rgba(255,255,255,0.25) !important; }
+.total-days    { color: rgba(255,255,255,0.35) !important; }
+
+/* ── Schedule legend ── */
+.schedule-legend {
+  background: rgba(255,255,255,0.03) !important;
+  border: 1px solid rgba(255,255,255,0.06) !important;
+  color: rgba(255,255,255,0.4) !important;
+}
+.legend-item { color: rgba(255,255,255,0.6) !important; }
+.legend-tip  { color: rgba(255,255,255,0.3) !important; }
+
+/* ── Employee calendar (cards grid) ── */
+.employee-day {
+  border: 1px solid rgba(255,255,255,0.06) !important;
+  box-shadow: none !important;
+}
+.employee-day.working {
+  background: linear-gradient(135deg, #059669, #10b981) !important;
+  border-color: transparent !important;
+}
+.employee-day.off {
+  background: linear-gradient(135deg, #dc2626, #ef4444) !important;
+  border-color: transparent !important;
+}
+.employee-day-date { opacity: 0.75; }
+
+/* ── Detail panel ── */
+.detail-header {
+  border-bottom: 1px solid rgba(255,255,255,0.07) !important;
+}
+.detail-header h3 { color: #a5b4fc !important; }
+
+/* ── Notifications ── */
+.notifications-section { border-top: 1px solid rgba(255,255,255,0.06) !important; }
+.notifications-section h4 { color: #a5b4fc !important; }
+
+.notification-item {
+  background: rgba(255,255,255,0.03) !important;
+  border: 1px solid rgba(255,255,255,0.06) !important;
+}
+.notification-item:hover { background: rgba(255,255,255,0.05) !important; box-shadow: none !important; }
+.notification-type { color: #818cf8 !important; }
+.notification-date { color: rgba(255,255,255,0.35) !important; }
+.notification-message { color: #cbd5e1 !important; }
+.notification-sender  { color: rgba(255,255,255,0.35) !important; }
+
+.delete-notification-btn {
+  background: rgba(239,68,68,0.15) !important;
+  color: #fca5a5 !important;
+  border: 1px solid rgba(239,68,68,0.2) !important;
+}
+.delete-notification-btn:hover {
+  background: rgba(239,68,68,0.28) !important;
+}
+
+/* ── Reports ── */
+.report-card {
+  background: rgba(255,255,255,0.03) !important;
+  border: 1px solid rgba(255,255,255,0.07) !important;
+}
+.report-header h4 { color: #a5b4fc !important; }
+
+.stat-item {
+  background: rgba(255,255,255,0.04) !important;
+  border: 1px solid rgba(255,255,255,0.07) !important;
+}
+.stat-value { color: #818cf8 !important; }
+.stat-label { color: rgba(255,255,255,0.4) !important; }
+
+.close-btn {
+  background: rgba(239,68,68,0.15) !important;
+  color: #fca5a5 !important;
+  border: 1px solid rgba(239,68,68,0.2) !important;
+}
+.close-btn:hover { background: rgba(239,68,68,0.25) !important; }
+
+/* ── Generic table ── */
+thead th {
+  background: rgba(255,255,255,0.04) !important;
+  border-bottom: 1px solid rgba(255,255,255,0.1) !important;
+  color: rgba(255,255,255,0.5) !important;
+}
+tbody tr:hover { background: rgba(99,102,241,0.06) !important; }
+td {
+  border-bottom: 1px solid rgba(255,255,255,0.05) !important;
+  color: #e2e8f0 !important;
+}
+.status-working { color: #6ee7b7 !important; }
+.status-off     { color: #fca5a5 !important; }
+
+/* ── List items (li) ── */
+li {
+  background: rgba(255,255,255,0.03) !important;
+  border: 1px solid rgba(255,255,255,0.07) !important;
+  color: #cbd5e1 !important;
+}
+
+/* ── New employee result box ── */
+#newEmpResult {
+  background: rgba(99,102,241,0.1) !important;
+  border: 1px solid rgba(99,102,241,0.25) !important;
+  color: #c7d2fe !important;
+}
+#newEmpResult strong { color: #a5b4fc !important; }
+
+/* ── Shift section (legacy) ── */
+.shift-section {
+  background: rgba(255,255,255,0.03) !important;
+  border: 1px solid rgba(255,255,255,0.07) !important;
+}
+.shift-section h3 {
+  color: #a5b4fc !important;
+  border-bottom: 1px solid rgba(255,255,255,0.07) !important;
+}
+
+/* ── Employee info card ── */
+.employee-info-card {
+  background: rgba(255,255,255,0.03) !important;
+  border: 1px solid rgba(255,255,255,0.07) !important;
+}
+.employee-info-name   { color: #f1f5f9 !important; }
+.employee-info-avatar {
+  background: linear-gradient(135deg, #6366f1, #4f46e5) !important;
+  color: white !important;
+  border: 2px solid rgba(99,102,241,0.3) !important;
+}
+
+/* ── Toasts dark ── */
+.toast-success { background: rgba(16,185,129,0.12) !important; border: 1px solid rgba(16,185,129,0.25) !important; color: #6ee7b7 !important; }
+.toast-error   { background: rgba(239,68,68,0.12)  !important; border: 1px solid rgba(239,68,68,0.25)  !important; color: #fca5a5 !important; }
+.toast-info    { background: rgba(99,102,241,0.12)  !important; border: 1px solid rgba(99,102,241,0.25) !important; color: #a5b4fc !important; }
+.toast-warning { background: rgba(245,158,11,0.12)  !important; border: 1px solid rgba(245,158,11,0.25) !important; color: #fcd34d !important; }
+
+/* ── Confirm modal dark ── */
+#confirmModal {
+  background: rgba(4, 6, 15, 0.7) !important;
+}
+.confirm-dialog {
+  background: #0f1520 !important;
+  border: 1px solid rgba(255,255,255,0.1) !important;
+  box-shadow: 0 24px 60px rgba(0,0,0,0.6) !important;
+}
+.confirm-dialog h3 { color: #f1f5f9 !important; }
+.confirm-dialog p  { color: rgba(255,255,255,0.5) !important; }
+
+/* ── Shift badge pills dark ── */
+.shift-badge-pill.Madrugada { background: rgba(139,92,246,0.15)  !important; color: #c4b5fd !important; border: 1px solid rgba(139,92,246,0.25) !important; }
+.shift-badge-pill.Manhã     { background: rgba(245,158,11,0.12)  !important; color: #fcd34d !important; border: 1px solid rgba(245,158,11,0.2)  !important; }
+.shift-badge-pill.Tarde     { background: rgba(20,184,166,0.12)  !important; color: #5eead4 !important; border: 1px solid rgba(20,184,166,0.2)  !important; }
+.shift-badge-pill.Noite     { background: rgba(99,102,241,0.15)  !important; color: #a5b4fc !important; border: 1px solid rgba(99,102,241,0.25) !important; }
+
+/* ── Role badges dark ── */
+.user-role-badge.admin    { background: rgba(99,102,241,0.15)  !important; color: #a5b4fc !important; border: 1px solid rgba(99,102,241,0.25) !important; }
+.user-role-badge.employee { background: rgba(16,185,129,0.12)  !important; color: #6ee7b7 !important; border: 1px solid rgba(16,185,129,0.2)  !important; }
+
+/* ── Notification borders dark ── */
+.notification-item.type-general  { border-left: 3px solid #6366f1 !important; }
+.notification-item.type-specific { border-left: 3px solid #8b5cf6 !important; }
+
+/* ── Period info dark ── */
+.period-info {
+  background: rgba(99,102,241,0.1) !important;
+  border-left: 3px solid #6366f1 !important;
+  border-color: rgba(99,102,241,0.2) rgba(99,102,241,0.2) rgba(99,102,241,0.2) #6366f1 !important;
+}
+
+/* ── Scrollbar dark ── */
+::-webkit-scrollbar       { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: rgba(255,255,255,0.03); }
+::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.12); border-radius: 99px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.22); }
+
+/* ══════════════════════════════════════════════════════════════
    LOGIN — REDESIGN PREMIUM (SaaS-grade dark UI)
    Substitui completamente o estilo anterior do #loginPanel
 ══════════════════════════════════════════════════════════════ */
