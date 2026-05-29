@@ -1,5 +1,37 @@
 const API_BASE = 'https://sistemas-escalas-monitora.onrender.com';
 
+/* ── Auth token helpers ── */
+function getToken() {
+  return localStorage.getItem('jstreinao_token');
+}
+
+function setToken(token) {
+  localStorage.setItem('jstreinao_token', token);
+}
+
+function clearToken() {
+  localStorage.removeItem('jstreinao_token');
+}
+
+function authHeaders(extra = {}) {
+  const token = getToken();
+  return { 'Content-Type': 'application/json', ...(token ? { 'Authorization': `Bearer ${token}` } : {}), ...extra };
+}
+
+function handleAuthError(response) {
+  if (response.status === 401 || response.status === 403) {
+    clearToken();
+    currentUser = null;
+    appData = null;
+    scheduleData = [];
+    appPanel.classList.add('hidden');
+    loginPanel.classList.remove('hidden');
+    showToast('Sessão expirada. Faça login novamente.', 'warning');
+    return true;
+  }
+  return false;
+}
+
 /* ── Toast notifications ── */
 function showToast(message, type = 'info', duration = 4500) {
   const container = document.getElementById('toastContainer');
@@ -90,6 +122,7 @@ let adminPeriodStart = null;
 let employeePeriodStart = null;
 let currentShiftView = null;
 let notifications = [];
+let hasUnsavedChanges = false;
 
 function formatDate(date) {
   const d = new Date(date);
@@ -442,6 +475,7 @@ function login() {
       loginBtn.disabled = false;
       loginBtn.textContent = originalText;
 
+      setToken(json.token);
       currentUser = json.user;
       appData = json.data;
       scheduleData = json.schedule;
@@ -486,6 +520,7 @@ function login() {
 }
 
 function logout() {
+  clearToken();
   currentUser = null;
   appData = null;
   scheduleData = [];
@@ -604,16 +639,50 @@ function renderShiftCalendar(shiftName, startDate = null) {
 }
 
 function openShiftDetail(shiftName) {
+  if (hasUnsavedChanges) {
+    showConfirm(
+      'Há alterações não salvas na escala atual. Deseja descartá-las e abrir outro turno?',
+      () => {
+        hasUnsavedChanges = false;
+        _openShiftDetail(shiftName);
+      },
+      { title: 'Alterações não salvas', confirmText: 'Descartar e continuar' }
+    );
+    return;
+  }
+  _openShiftDetail(shiftName);
+}
+
+function _openShiftDetail(shiftName) {
   currentShiftView = shiftName;
   shiftDetailPanel.classList.remove('hidden');
   shiftDetailTitle.textContent = `Escala de ${shiftName}`;
+  shiftDetailPanel.scrollIntoView({ behavior: 'smooth', block: 'start' });
   renderShiftCalendar(shiftName, adminPeriodStart);
+  hasUnsavedChanges = false;
+  _updateSaveBtn();
 }
 
 function closeShiftDetail() {
+  if (hasUnsavedChanges) {
+    showConfirm(
+      'Há alterações não salvas. Deseja salvar antes de fechar?',
+      () => { saveFolgas(); _closeShiftDetail(); },
+      { title: 'Salvar alterações?', confirmText: 'Salvar e fechar' }
+    );
+    // Botão cancelar fecha sem salvar
+    document.getElementById('confirmCancelBtn').addEventListener('click', _closeShiftDetail, { once: true });
+    return;
+  }
+  _closeShiftDetail();
+}
+
+function _closeShiftDetail() {
   currentShiftView = null;
+  hasUnsavedChanges = false;
   shiftDetailPanel.classList.add('hidden');
   shiftDetailCalendar.innerHTML = '';
+  _updateSaveBtn();
 }
 
 function toggleScheduleDay(employeeId, date, element) {
@@ -641,7 +710,26 @@ function toggleScheduleDay(employeeId, date, element) {
     totalTd.innerHTML = `<span class="total-working">${wc}</span><span class="total-sep">/</span><span class="total-days">${dates.length}</span>`;
   }
 
+  // Marca alterações não salvas
+  hasUnsavedChanges = true;
+  _updateSaveBtn();
   renderFolgas();
+}
+
+function _updateSaveBtn() {
+  if (!saveFolgasBtn) return;
+  if (hasUnsavedChanges) {
+    saveFolgasBtn.classList.add('unsaved');
+    saveFolgasBtn.innerHTML = `
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+      Salvar Alterações
+      <span class="unsaved-dot"></span>`;
+  } else {
+    saveFolgasBtn.classList.remove('unsaved');
+    saveFolgasBtn.innerHTML = `
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+      Escala Salva`;
+  }
 }
 
 function renderFolgas() {
@@ -769,10 +857,11 @@ function addEmployee() {
 
   fetch(`${API_BASE}/api/funcionario`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: authHeaders(),
     body: JSON.stringify({ name, username, password, turno })
   })
     .then(async (response) => {
+      if (handleAuthError(response)) return null;
       const text = await response.text();
       if (!response.ok) {
         throw new Error(text || 'Erro ao adicionar funcionário');
@@ -780,8 +869,9 @@ function addEmployee() {
       return JSON.parse(text);
     })
     .then((result) => {
+      if (!result) return;
       // Recarregar dados do servidor
-      fetch(`${API_BASE}/api/data`)
+      fetch(`${API_BASE}/api/data`, { headers: authHeaders() })
         .then(r => r.json())
         .then((json) => {
           appData = json.data;
@@ -791,21 +881,20 @@ function addEmployee() {
             renderShiftCalendar(currentShiftView, adminPeriodStart);
           }
           renderFolgas();
-          
+
           // Limpar campos
           newEmpName.value = '';
           newEmpUsername.value = '';
           newEmpPassword.value = '';
           newEmpTurno.value = '';
-          
-          // Mostrar resultado
+
+          // Mostrar resultado (sem exibir senha)
           newEmpCredentials.innerHTML = `
             <strong>Usuário:</strong> ${result.username}<br>
-            <strong>Senha:</strong> ${result.password}<br>
-            <em style="color: #6b7280; font-size: 12px;">Anote essas credenciais e entregue ao funcionário</em>
+            <em style="color: #6b7280; font-size: 12px;">Entregue a senha definida ao funcionário pessoalmente</em>
           `;
           newEmpResult.classList.remove('hidden');
-          
+
           // Esconder resultado após 10 segundos
           setTimeout(() => {
             newEmpResult.classList.add('hidden');
@@ -829,18 +918,20 @@ function removeEmployee(employeeId) {
 function _doRemoveEmployee(employeeId) {
   fetch(`${API_BASE}/api/funcionario/${employeeId}`, {
     method: 'DELETE',
-    headers: { 'Content-Type': 'application/json' }
+    headers: authHeaders()
   })
     .then(async (response) => {
+      if (handleAuthError(response)) return null;
       if (!response.ok) {
         const text = await response.text();
         throw new Error(text || 'Erro ao remover funcionário');
       }
       return response.json();
     })
-    .then(() => {
+    .then((result) => {
+      if (!result) return;
       // Recarregar dados
-      fetch(`${API_BASE}/api/data`)
+      fetch(`${API_BASE}/api/data`, { headers: authHeaders() })
         .then(r => r.json())
         .then((json) => {
           appData = json.data;
@@ -860,24 +951,98 @@ function _doRemoveEmployee(employeeId) {
 }
 
 function saveFolgas() {
+  const month = adminPeriodStart.slice(0, 7); // ex: "2026-04"
+  const monthFolgas = appData.folgas.filter(f => f.date.startsWith(month));
+
+  saveFolgasBtn.disabled = true;
+  saveFolgasBtn.classList.add('btn-loading');
+
   fetch(`${API_BASE}/api/folgas`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ folgas: appData.folgas })
+    headers: authHeaders(),
+    body: JSON.stringify({ folgas: monthFolgas, month })
   })
     .then((response) => {
-      if (!response.ok) {
-        throw new Error('Falha ao salvar folgas');
-      }
+      if (handleAuthError(response)) return null;
+      if (!response.ok) throw new Error('Falha ao salvar');
       return response.json();
     })
-    .then(() => {
-      showToast('Folgas salvas com sucesso!', 'success');
+    .then((json) => {
+      if (!json) return;
+      appData.folgas = json.folgas;
+      hasUnsavedChanges = false;
+      _updateSaveBtn();
+      showToast(`Escala de ${formatMonthLabel(adminPeriodStart)} salva com sucesso!`, 'success');
     })
     .catch((error) => {
       console.error(error);
-      showToast('Erro ao salvar folgas. Verifique o console.', 'error');
+      showToast('Erro ao salvar escala. Tente novamente.', 'error');
+    })
+    .finally(() => {
+      saveFolgasBtn.disabled = false;
+      saveFolgasBtn.classList.remove('btn-loading');
     });
+}
+
+// ── Exportar escala do turno atual como CSV ──
+function exportScheduleCSV() {
+  const month = adminPeriodStart.slice(0, 7);
+  const monthDates = getMonthDates(getMonthStart(adminPeriodStart));
+  const employees = currentShiftView
+    ? appData.employees.filter(e => e.turno === currentShiftView)
+    : appData.employees;
+
+  const dateHeaders = monthDates.map(d => d.slice(8)); // só o dia "01","02"...
+  const headers = ['Funcionário', 'Turno', ...dateHeaders, 'Trabalho', 'Folgas', 'Presença%'];
+
+  const rows = employees.map(emp => {
+    const days = monthDates.map(d => getScheduleStatus(emp.id, d).working ? 'T' : 'F');
+    const working = days.filter(d => d === 'T').length;
+    const off = days.length - working;
+    const pct = Math.round((working / days.length) * 100) + '%';
+    return [emp.name, emp.turno, ...days, working, off, pct];
+  });
+
+  const csvContent = [headers, ...rows]
+    .map(row => row.map(v => `"${v}"`).join(';'))
+    .join('\n');
+
+  const blob = new Blob(['\uFEFF' + csvContent], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  const label = currentShiftView ? currentShiftView.toLowerCase() : 'todos-turnos';
+  a.href = url;
+  a.download = `escala-${label}-${month}.csv`;
+  a.click();
+  URL.revokeObjectURL(url);
+  showToast('CSV exportado com sucesso!', 'success');
+}
+
+// ── Exportar relatório mensal como CSV ──
+function exportReportCSV() {
+  const month = adminPeriodStart.slice(0, 7);
+  const monthDates = getMonthDates(getMonthStart(adminPeriodStart));
+  const headers = ['Funcionário', 'Turno', 'Dias Trabalhados', 'Dias de Folga', 'Total Dias', 'Presença%'];
+
+  const rows = appData.employees.map(emp => {
+    const working = monthDates.filter(d => getScheduleStatus(emp.id, d).working).length;
+    const off = monthDates.length - working;
+    const pct = Math.round((working / monthDates.length) * 100) + '%';
+    return [emp.name, emp.turno, working, off, monthDates.length, pct];
+  });
+
+  const csvContent = [headers, ...rows]
+    .map(row => row.map(v => `"${v}"`).join(';'))
+    .join('\n');
+
+  const blob = new Blob(['\uFEFF' + csvContent], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `relatorio-mensal-${month}.csv`;
+  a.click();
+  URL.revokeObjectURL(url);
+  showToast('Relatório CSV exportado!', 'success');
 }
 
 function updateAdminPeriodUI(date) {
@@ -901,13 +1066,25 @@ function updateEmployeePeriodUI(date) {
 }
 
 function updateAdminPeriod(newDate) {
-  adminPeriodStart = newDate;
-  updateAdminPeriodUI(newDate);
-  
-  if (currentShiftView) {
-    renderShiftCalendar(currentShiftView, newDate);
+  const doUpdate = () => {
+    adminPeriodStart = newDate;
+    hasUnsavedChanges = false;
+    updateAdminPeriodUI(newDate);
+    if (currentShiftView) renderShiftCalendar(currentShiftView, newDate);
+    renderFolgas();
+    _updateSaveBtn();
+  };
+
+  if (hasUnsavedChanges) {
+    showConfirm(
+      'Há alterações não salvas na escala atual. Salvar antes de mudar o período?',
+      () => { saveFolgas(); doUpdate(); },
+      { title: 'Alterações não salvas', confirmText: 'Salvar e mudar' }
+    );
+    document.getElementById('confirmCancelBtn').addEventListener('click', doUpdate, { once: true });
+    return;
   }
-  renderFolgas();
+  doUpdate();
 }
 
 function nextAdminPeriod() {
