@@ -4,7 +4,6 @@ const express = require('express');
 const cors = require('cors');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const rateLimit = require('express-rate-limit');
 
 const JWT_SECRET = process.env.JWT_SECRET;
 if (!JWT_SECRET) {
@@ -17,7 +16,7 @@ mongoose.connect(process.env.MONGO_URI)
   .catch(err => console.log('erro:', err));
 
 const EmployeeSchema = new mongoose.Schema({ id: Number, name: String, turno: String });
-const UserSchema = new mongoose.Schema({ id: String, username: { type: String, unique: true }, password: String, name: String, role: String, employeeId: Number });
+const UserSchema = new mongoose.Schema({ id: String, username: { type: String, unique: true }, password: String, name: String, role: String, employeeId: Number, failedAttempts: { type: Number, default: 0 }, lockedUntil: { type: Date, default: null } });
 const FolgaSchema = new mongoose.Schema({ employeeId: Number, date: String });
 const SettingsSchema = new mongoose.Schema({ cycleStart: String });
 const NotificationSchema = new mongoose.Schema({
@@ -41,14 +40,8 @@ app.use(cors());
 app.use(express.json());
 app.use(express.static(__dirname));
 
-// ── Rate limiting no login (máx 10 tentativas por 15 min por IP) ──
-const loginLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000,
-  max: 10,
-  standardHeaders: true,
-  legacyHeaders: false,
-  message: { error: 'Muitas tentativas de login. Tente novamente em 15 minutos.' }
-});
+const MAX_FAILED_ATTEMPTS = 10;
+const LOCK_DURATION_MS = 15 * 60 * 1000; // 15 minutos
 
 // ── Middleware de autenticação JWT ──
 function authenticateToken(req, res, next) {
@@ -91,20 +84,40 @@ function buildSchedule(employees, folgas, cycleStart, days = 14) {
   return schedule;
 }
 
-// ── Login (com rate limit) ──
-app.post('/api/login', loginLimiter, async (req, res) => {
+// ── Login (com bloqueio por tentativas no banco) ──
+app.post('/api/login', async (req, res) => {
   const { username, password } = req.body;
   if (!username || !password) return res.status(400).json({ error: 'Usuário e senha são obrigatórios.' });
 
   const user = await User.findOne({ username });
   if (!user) return res.status(401).json({ error: 'Usuário ou senha inválidos.' });
 
+  // Verificar se conta está bloqueada
+  if (user.lockedUntil && user.lockedUntil > new Date()) {
+    const minutosRestantes = Math.ceil((user.lockedUntil - new Date()) / 60000);
+    return res.status(429).json({ error: `Conta bloqueada por excesso de tentativas. Tente novamente em ${minutosRestantes} minuto(s).` });
+  }
+
   const isBcrypt = user.password.startsWith('$2a$') || user.password.startsWith('$2b$');
   const passwordMatch = isBcrypt
     ? bcrypt.compareSync(password, user.password)
     : user.password === password;
 
-  if (!passwordMatch) return res.status(401).json({ error: 'Usuário ou senha inválidos.' });
+  if (!passwordMatch) {
+    const novasTentativas = (user.failedAttempts || 0) + 1;
+    const bloqueado = novasTentativas >= MAX_FAILED_ATTEMPTS;
+    await User.updateOne({ _id: user._id }, {
+      failedAttempts: novasTentativas,
+      lockedUntil: bloqueado ? new Date(Date.now() + LOCK_DURATION_MS) : null
+    });
+    if (bloqueado) {
+      return res.status(429).json({ error: 'Conta bloqueada por excesso de tentativas. Tente novamente em 15 minutos.' });
+    }
+    return res.status(401).json({ error: `Usuário ou senha inválidos. Tentativa ${novasTentativas} de ${MAX_FAILED_ATTEMPTS}.` });
+  }
+
+  // Login bem-sucedido — resetar tentativas
+  await User.updateOne({ _id: user._id }, { failedAttempts: 0, lockedUntil: null });
 
   // Migrar senha em texto puro para bcrypt automaticamente
   if (!isBcrypt) {
