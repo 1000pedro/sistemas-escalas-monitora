@@ -113,7 +113,7 @@ app.post('/api/login', async (req, res) => {
     if (bloqueado) {
       return res.status(429).json({ error: 'Conta bloqueada por excesso de tentativas. Tente novamente em 15 minutos.' });
     }
-    return res.status(401).json({ error: `Usuário ou senha inválidos. Tentativa ${novasTentativas} de ${MAX_FAILED_ATTEMPTS}.` });
+    return res.status(401).json({ error: 'Usuário ou senha inválidos.' });
   }
 
   // Login bem-sucedido — resetar tentativas
